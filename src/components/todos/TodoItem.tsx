@@ -20,6 +20,7 @@ const TodoItem = ({ todo, toggleTodo, editTodo, deleteTodo }: TodoItemProps): JS
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === 'Enter') {
       // 타이틀
+      handleEditSave();
     }
   };
   const handleEditSave = (): void => {
