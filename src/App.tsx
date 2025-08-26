@@ -1,12 +1,55 @@
-import Counter from './components/Counter';
-import NameEditor from './components/NameEditor';
+import { useState } from 'react';
+import TodoWrite from './components/todos/TodoWrite';
+import type { TodoType } from './types/TodoType';
+import TodoList from './components/todos/TodoList';
 
-function App() {
+// type
+// export type TodoType = { id: string; title: string; completed: boolean };
+
+// 초기값
+const initialTodos: TodoType[] = [
+  { id: '1', title: '할일 1', completed: false },
+  { id: '2', title: '할일 2', completed: true },
+  { id: '3', title: '할일 3', completed: false },
+];
+
+function App(): JSX.Element {
+  // ts
+  const [todos, setTodos] = useState<TodoType[]>(initialTodos);
+  // todos 업데이트하기
+  const addTodo = (newTodo: TodoType): void => {
+    setTodos([newTodo, ...todos]);
+  };
+  // todo 토글하기
+  const toggleTodo = (id: string): void => {
+    const arr = todos.map(item =>
+      item.id === id ? { ...item, completed: !item.completed } : item,
+    );
+    setTodos(arr);
+  };
+  // todo 삭제하기
+  const deleteTodo = (id: string): void => {
+    const arr = todos.filter(item => item.id !== id);
+    setTodos(arr);
+  };
+  // todo 수정하기
+  const editTodo = (id: string, editTitle: string): void => {
+    const arr = todos.map(item => (item.id === id ? { ...item, title: editTitle } : item));
+    setTodos(arr);
+  };
+  // tsx
   return (
     <div>
-      <h1>예제</h1>
-      <Counter />
-      <NameEditor />
+      <h1>할일 웹 서비스</h1>
+      <div>
+        <TodoWrite addTodo={addTodo} />
+        <TodoList
+          todos={todos}
+          toggleTodo={toggleTodo}
+          editTodo={editTodo}
+          deleteTodo={deleteTodo}
+        />
+      </div>
     </div>
   );
 }
