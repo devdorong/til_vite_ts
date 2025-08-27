@@ -1,15 +1,15 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import type { TodoType } from '../../types/TodoType';
+import { useTodos } from '../../contexts/TodoContext';
 
 type TodoItemProps = {
   children?: React.ReactNode;
   todo: TodoType;
-  toggleTodo: (id: string) => void;
-  editTodo: (id: string, editTitle: string) => void;
-  deleteTodo: (id: string) => void;
 };
 
-const TodoItem = ({ todo, toggleTodo, editTodo, deleteTodo }: TodoItemProps): JSX.Element => {
+const TodoItem = ({ todo }: TodoItemProps): JSX.Element => {
+  // Context 사용
+  const { toggleTodo, editTodo, deleteTodo } = useTodos();
   // js
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [editTitle, setEditTitle] = useState<string>(todo.title);
