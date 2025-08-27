@@ -1,23 +1,20 @@
 import React from 'react';
-import TodoList from './components/todos/TodoList';
-import TodoWrite from './components/todos/TodoWrite';
-import { TodoProvider } from './contexts/TodoContext';
-// type
-// export type TodoType = { id: string; title: string; completed: boolean };
+import GoodList from './components/shop/GoodList';
+import Wallet from './components/shop/Wallet';
+import Cart from './components/shop/Cart';
+import { ShopProvider } from './contexts/shop/ShopContext';
 
-// 초기값
-function App(): JSX.Element {
-  // ts
-  // tsx
+function App() {
   return (
     <div>
-      <h1>할일 웹 서비스</h1>
-      <TodoProvider>
+      <h1>나의 가게</h1>
+      <ShopProvider>
         <div>
-          <TodoWrite />
-          <TodoList />
+          <GoodList />
+          <Cart />
+          <Wallet />
         </div>
-      </TodoProvider>
+      </ShopProvider>
     </div>
   );
 }
