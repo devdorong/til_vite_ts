@@ -1,18 +1,36 @@
 import React from 'react';
+import { ShopProvider } from './features/shop';
 import GoodList from './components/shop/GoodList';
-import Wallet from './components/shop/Wallet';
 import Cart from './components/shop/Cart';
-import { ShopProvider } from './contexts/shop/ShopContext';
+import Wallet from './components/shop/Wallet';
 
 function App() {
+  // ts
+  const page: React.CSSProperties = {
+    maxWidth: 960,
+    margin: '0 auto',
+    padding: 24,
+    background: '#eaeaea',
+  };
+  const grid: React.CSSProperties = {
+    display: 'grid',
+    gridTemplateColumns: '2fr 1fr',
+    gap: 20,
+    alignItems: 'start',
+  };
+  // tsx
   return (
-    <div>
-      <h1>나의 가게</h1>
+    <div style={page}>
+      <h1 style={{ textAlign: 'center', marginBottom: 20 }}> 🎁 Dorong's Shop</h1>
       <ShopProvider>
-        <div>
-          <GoodList />
-          <Cart />
-          <Wallet />
+        <div style={grid}>
+          <div>
+            <GoodList />
+          </div>
+          <div>
+            <Cart />
+            <Wallet />
+          </div>
         </div>
       </ShopProvider>
     </div>
