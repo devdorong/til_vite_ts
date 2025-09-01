@@ -9,6 +9,7 @@ import GoodsPage from './pages/GoodsPage';
 import CartPage from './pages/CartPage';
 import WalletPage from './pages/WalletPage';
 import NotFound from './pages/NotFound';
+import Calendar from './pages/Calendar';
 
 function App() {
   // ts
@@ -59,6 +60,7 @@ function App() {
           </NavLink>
         </nav>
         <h1 style={{ textAlign: 'center', marginBottom: 20 }}> 🎁 Dorong's Shop</h1>
+        <Calendar />
         <ShopProvider>
           <div>
             <Routes>
