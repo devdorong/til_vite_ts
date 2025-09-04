@@ -7,14 +7,7 @@
  */
 
 import type { Session, User } from '@supabase/supabase-js';
-import {
-  Children,
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type PropsWithChildren,
-} from 'react';
+import { createContext, useContext, useEffect, useState, type PropsWithChildren } from 'react';
 import { supabase } from '../lib/supabase';
 
 // 1. 인증 컨텍스트 타입

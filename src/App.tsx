@@ -1,11 +1,12 @@
 import { Link, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AutoContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import AuthCallback from './pages/AuthCallback';
 import HomePage from './pages/HomePage';
 import SignUpPage from './pages/SignUpPage';
 import SigninPage from './pages/SigninPage';
 import TodosPage from './pages/TodosPage';
 import Protected from './components/Protected';
+import ProfilePage from './pages/ProfilePage';
 
 const TopBar = () => {
   const { signOut, user } = useAuth();
@@ -25,6 +26,7 @@ const TopBar = () => {
       {user ? (
         <>
           <Link to={'/todos'}>할일</Link>
+          <Link to={'/profile'}>프로필</Link>
           <button onClick={signOut}>로그아웃</button>
         </>
       ) : (
@@ -54,7 +56,16 @@ function App() {
               element={
                 <Protected>
                   <TodosPage />
-                </Protected>  
+                </Protected>
+              }
+            />
+
+            <Route
+              path="/profile"
+              element={
+                <Protected>
+                  <ProfilePage />
+                </Protected>
               }
             />
           </Routes>

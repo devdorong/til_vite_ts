@@ -1,5 +1,5 @@
 import type { PropsWithChildren } from 'react';
-import { useAuth } from '../contexts/AutoContext';
+import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 
 /**
