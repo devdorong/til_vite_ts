@@ -7,9 +7,14 @@ import SigninPage from './pages/SigninPage';
 import TodosPage from './pages/TodosPage';
 import Protected from './components/Protected';
 import ProfilePage from './pages/ProfilePage';
+import AdminPage from './pages/AdminPage';
 
 const TopBar = () => {
   const { signOut, user } = useAuth();
+  // 관리자인 경우 메뉴 추가로 출력하기
+  // isAdmin 에는 true/false
+  const isAdmin = user?.email === 'dev.dorong@gmail.com';
+
   return (
     <nav
       style={{
@@ -35,6 +40,7 @@ const TopBar = () => {
           <Link to={'/signin'}>로그인</Link>
         </>
       )}
+      {isAdmin && <Link to={'/admin'}>관리자</Link>}
     </nav>
   );
 };
@@ -65,6 +71,14 @@ function App() {
               element={
                 <Protected>
                   <ProfilePage />
+                </Protected>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <Protected>
+                  <AdminPage />
                 </Protected>
               }
             />

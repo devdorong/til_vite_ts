@@ -11,7 +11,7 @@ import type { Profile, ProfileUpdate } from '../types/TodoType';
  */
 function ProfilePage() {
   // 회원 기본 정보
-  const { user } = useAuth();
+  const { user, deleteAccount } = useAuth();
   // 데이터 가져오는 동안 로딩
   const [loading, setLoading] = useState<boolean>(true);
   // 사용자 프로필
@@ -70,6 +70,16 @@ function ProfilePage() {
       console.log('프로필 업데이트 오류', err);
     } finally {
       setEdit(!edit);
+    }
+  };
+
+  // 회원탈퇴
+  const handleDeleteUser = () => {
+    const message: string = '😢 계정을 완전히 삭제하시겠습니까? \n\n 복구가 불가능합니다.';
+    let isConfirm = false;
+    isConfirm = confirm(message);
+    if (isConfirm) {
+      deleteAccount();
     }
   };
 
@@ -201,7 +211,7 @@ function ProfilePage() {
         ) : (
           <>
             <button onClick={() => setEdit(!edit)}>정보수정</button>
-            <button>회원탈퇴</button>
+            <button onClick={handleDeleteUser}>회원탈퇴</button>
           </>
         )}
       </div>
