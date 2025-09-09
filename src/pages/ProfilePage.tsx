@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { getProfile, updateProfile, uploadAvatar } from '../lib/profile';
+import { getProfile, removeAvatar, updateProfile, uploadAvatar } from '../lib/profile';
 import type { Profile, ProfileUpdate } from '../types/TodoType';
 
 /**
@@ -80,19 +80,43 @@ function ProfilePage() {
       // 아바타 이미지 제거
       if (imageRemovalRequest) {
         // storage 에 실제 이미지를 제거함.
+        const success = await removeAvatar(user.id);
+        if (success) {
+          imgUrl = null;
+        } else {
+          alert('이미지 제거에 실패했습니다. 기존 이미지가 유지됩니다.');
+          
+        }
       } else if (selectedFile) {
         // 새로운 이미지가 업로드 딘다면
         const uploadedImageUrl = await uploadAvatar(selectedFile, user.id);
+        if (uploadedImageUrl) {
+          // 실제로 업로드 완료 후 전달받은 URL 문자열을 보관함.
+          // profiles 테이블에 avatar_url 에 넣어줄 문자열
+          imgUrl = uploadedImageUrl;
+        } else {
+          alert('이미지 업로드에 실패했습니다. 닉네임만 저장합니다.');
+        }
       }
 
-      const tempUpdateData: ProfileUpdate = { nickname: nickName };
+      // 실제로 업데이트 진행
+      const tempUpdateData: ProfileUpdate = { nickname: nickName, avatar_url: imgUrl };
       const success = await updateProfile(tempUpdateData, user.id);
       if (!success) {
         console.log('프로필 업데이트에 실패하였습니다.');
         return;
       }
+      // 업데이트 성공시 초기화 진행
+      setPreviewImage(null);
+      setSelectedFile(null);
+      setImageRemovalRequest(false);
+      setOriginalAvartarUrl(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
 
-      loadProfile();
+      await loadProfile();
+      alert('프로필이 성공적으로 업데이트 되었습니다.');
     } catch (err) {
       console.log('프로필 업데이트 오류', err);
     } finally {
@@ -222,14 +246,14 @@ function ProfilePage() {
                 <div>
                   {previewImage ? (
                     <div>
-                      <img src={previewImage} style={{ width: 100, height: 100 }} />
+                      <img src={previewImage} style={{ width: 200, height: 200 }} />
                       <p>새로운 이미지 미리보기</p>
                     </div>
                   ) : imageRemovalRequest ? (
                     <div>이미지 제거됨</div>
                   ) : originalAvatarUrl ? (
                     <div>
-                      <img src={originalAvatarUrl} />
+                      <img src={originalAvatarUrl} style={{ width: 200, height: 200 }} />
                       현재아바타
                     </div>
                   ) : (
@@ -277,7 +301,7 @@ function ProfilePage() {
             <div>
               <h4>아바타</h4>
               {profileData?.avatar_url ? (
-                <img src={profileData.avatar_url} />
+                <img src={profileData.avatar_url} width={200} height={200} />
               ) : (
                 <div>기본이미지</div>
               )}
