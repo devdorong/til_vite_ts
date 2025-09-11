@@ -5,9 +5,10 @@ import type { Todo, TodoInsert } from '../../types/TodoType';
 
 type TodoWriteProps = {
   children?: React.ReactNode;
+  handleChagePage: (page: number) => void;
 };
 
-const TodoWrite = ({}: TodoWriteProps): JSX.Element => {
+const TodoWrite = ({ handleChagePage }: TodoWriteProps): JSX.Element => {
   // Context 를 사용함.
   const { addTodo } = useTodos();
   const [title, setTitle] = useState<string>('');
@@ -35,6 +36,9 @@ const TodoWrite = ({}: TodoWriteProps): JSX.Element => {
       if (result) {
         // Context 에 Todo 타입 데이터를 추가해줌.
         addTodo(result);
+        // 현재 페이지를 1페이지로 이동
+        handleChagePage(1);
+        
       }
       // 현재 Wirte 컴포넌트 state 초기화
       setTitle('');

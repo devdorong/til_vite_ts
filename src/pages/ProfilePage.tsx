@@ -85,7 +85,6 @@ function ProfilePage() {
           imgUrl = null;
         } else {
           alert('이미지 제거에 실패했습니다. 기존 이미지가 유지됩니다.');
-          
         }
       } else if (selectedFile) {
         // 새로운 이미지가 업로드 딘다면
@@ -299,7 +298,7 @@ function ProfilePage() {
           <>
             <div>닉네임 : {profileData?.nickname}</div>
             <div>
-              <h4>아바타</h4>
+              <h4>프로필 이미지</h4>
               {profileData?.avatar_url ? (
                 <img src={profileData.avatar_url} width={200} height={200} />
               ) : (
