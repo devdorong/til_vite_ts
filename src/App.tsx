@@ -8,6 +8,7 @@ import TodosPage from './pages/TodosPage';
 import Protected from './components/Protected';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
+import TodosInfinitePage from './pages/TodosInfinitePage';
 
 const TopBar = () => {
   const { signOut, user } = useAuth();
@@ -31,6 +32,7 @@ const TopBar = () => {
       {user ? (
         <>
           <Link to={'/todos'}>할일</Link>
+          <Link to={'/todos-infinite'}>무한스크롤 할일</Link>
           <Link to={'/profile'}>프로필</Link>
           <button onClick={signOut}>로그아웃</button>
         </>
@@ -62,6 +64,14 @@ function App() {
               element={
                 <Protected>
                   <TodosPage />
+                </Protected>
+              }
+            />
+            <Route
+              path="/todos-infinite"
+              element={
+                <Protected>
+                  <TodosInfinitePage />
                 </Protected>
               }
             />
