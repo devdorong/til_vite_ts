@@ -100,7 +100,7 @@ function reducer(state: InfiniteScrollState, action: InfiniteScrollAction): Infi
     case InfiniteScrollActionType.APPEND_TODOS: {
       return {
         ...state,
-        todos: [...action.payload.todos, ...state.todos],
+        todos: [...state.todos, ...action.payload.todos],
         hasMore: action.payload.hasMore,
         loadingMore: false,
       };
@@ -124,6 +124,7 @@ function reducer(state: InfiniteScrollState, action: InfiniteScrollAction): Infi
       return {
         ...state,
         todos: state.todos.filter(item => item.id !== action.payload.id),
+        totalCount: Math.max(0, state.totalCount - 1),
       };
     }
     case InfiniteScrollActionType.EDIT_TODO: {
@@ -214,6 +215,11 @@ export const InfiniteScrollProvider = ({
         })),
       );
 
+      // 데이터가 실제로 로드되었을 때만 상태 업데이트
+      // dispatch({
+      //   type: InfiniteScrollActionType.APPEND_TODOS,
+      //   payload: { todos: result.todos, hasMore: result.hasMore },
+      // });
       dispatch({
         type: InfiniteScrollActionType.APPEND_TODOS,
         payload: { todos: result.todos, hasMore: result.hasMore },
