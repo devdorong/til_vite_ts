@@ -1,21 +1,14 @@
 import { useEffect, useState } from 'react';
-import TodosContent from '../components/todos/TodosContent';
-import { useAuth } from '../contexts/AuthContext';
-import { TodoProvider } from '../contexts/TodoContext';
-import { getProfile } from '../lib/profile';
-import type { Profile } from '../types/TodoType';
+import TodosContent from '../../components/todos/TodosContent';
+import { useAuth } from '../../contexts/AuthContext';
+import { TodoProvider } from '../../contexts/TodoContext';
+import { getProfile } from '../../lib/profile';
+import type { Profile } from '../../types/TodoType';
 
-function TodosPage() {
+function TodoListPage() {
   const { user } = useAuth();
-  // 페이지 네이션 관련
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  // 페이지 변경 함수
-  const handleChagePage = (page: number) => {
-    setCurrentPage(page);
-  };
+  const [profile, setProfile] = useState<Profile | null>(null);
 
-  const [profile, setProfile] = useState<null | Profile>(null);
   // 프로필 가져오기
   const loadProfile = async () => {
     try {
@@ -33,6 +26,15 @@ function TodosPage() {
   useEffect(() => {
     loadProfile();
   }, []);
+
+  // 페이지 네이션 관련
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  // 페이지 변경 함수
+  const handleChagePage = (page: number) => {
+    setCurrentPage(page);
+  };
+
   return (
     <div>
       <div className="page-header">
@@ -41,6 +43,7 @@ function TodosPage() {
       </div>
       <TodoProvider currentPage={currentPage} limit={itemsPerPage}>
         <TodosContent
+          profile={profile}
           currentPage={currentPage}
           itemsPerPage={itemsPerPage}
           handleChagePage={handleChagePage}
@@ -50,4 +53,4 @@ function TodosPage() {
   );
 }
 
-export default TodosPage;
+export default TodoListPage;

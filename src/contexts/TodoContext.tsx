@@ -44,7 +44,7 @@ function reducer(state: TodosState, action: ActionType) {
   switch (action.type) {
     case TodoActionType.ADD: {
       const { todo } = action.payload;
-      return { ...state, todos: [todo, ...state.todos] };
+      return { ...state, todos: [todo, ...state.todos], totalCount: state.totalCount + 1 };
     }
     case TodoActionType.TOGGLE: {
       const { id } = action.payload;
@@ -56,7 +56,7 @@ function reducer(state: TodosState, action: ActionType) {
     case TodoActionType.DELETE: {
       const { id } = action.payload;
       const arr = state.todos.filter(item => item.id !== id);
-      return { ...state, todos: arr };
+      return { ...state, todos: arr, totalCount: Math.max(0, state.totalCount - 1) };
     }
     case TodoActionType.EDIT: {
       const { id, title } = action.payload;
@@ -161,7 +161,7 @@ export const TodoProvider = ({
   // 페이지가 바뀌면 다시 실행하도록 해야 한다.
   useEffect(() => {
     loadTodos(currentPage, limit);
-  }, [currentPage,limit]);
+  }, [currentPage, limit]);
   // value 전달할 값
   const value: TodoContextvalue = {
     todos: state.todos,

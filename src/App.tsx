@@ -9,6 +9,11 @@ import Protected from './components/Protected';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage from './pages/AdminPage';
 import TodosInfinitePage from './pages/TodosInfinitePage';
+import TodoList from './components/todos/TodoList';
+import TodoListPage from './pages/todos/TodoListPage';
+import TodoWritePage from './pages/todos/TodoWritePage';
+import TodoEditPage from './pages/todos/TodoEditPage';
+import TodoDetailPage from './pages/todos/TodoDetailPage';
 
 const TopBar = () => {
   const { signOut, user } = useAuth();
@@ -26,23 +31,42 @@ const TopBar = () => {
         margin: '0 auto',
         padding: '20px',
       }}
+      className="nav"
     >
-      <Link to={'/'}>홈</Link>
+      <Link to={'/'} className="nav-link">
+        홈
+      </Link>
 
       {user ? (
         <>
-          <Link to={'/todos'}>할일</Link>
-          <Link to={'/todos-infinite'}>무한스크롤 할일</Link>
-          <Link to={'/profile'}>프로필</Link>
-          <button onClick={signOut}>로그아웃</button>
+          <Link className="nav-link" to={'/todos'}>
+            할일
+          </Link>
+          <Link className="nav-link" to={'/todos-infinite'}>
+            무한스크롤 할일
+          </Link>
+          <Link className="nav-link" to={'/profile'}>
+            프로필
+          </Link>
+          <button onClick={signOut} className="btn btn-secondary btn-sm">
+            로그아웃
+          </button>
         </>
       ) : (
         <>
-          <Link to={'/signup'}>회원가입</Link>
-          <Link to={'/signin'}>로그인</Link>
+          <Link className="nav-link" to={'/signup'}>
+            회원가입
+          </Link>
+          <Link className="nav-link" to={'/signin'}>
+            로그인
+          </Link>
         </>
       )}
-      {isAdmin && <Link to={'/admin'}>관리자</Link>}
+      {isAdmin && (
+        <Link className="nav-link" to={'/admin'}>
+          관리자
+        </Link>
+      )}
     </nav>
   );
 };
@@ -50,8 +74,10 @@ const TopBar = () => {
 function App() {
   return (
     <AuthProvider>
-      <div>
-        <h1>Todo Service</h1>
+      <div className="container">
+        <div className="page-header">
+          <h1 className="page-title">📕Todo Service</h1>
+        </div>
         <Router>
           <TopBar />
           <Routes>
@@ -63,7 +89,31 @@ function App() {
               path="/todos"
               element={
                 <Protected>
-                  <TodosPage />
+                  <TodoListPage />
+                </Protected>
+              }
+            />
+            <Route
+              path="/todos/write"
+              element={
+                <Protected>
+                  <TodoWritePage />
+                </Protected>
+              }
+            />
+            <Route
+              path="/todos/edit/:id"
+              element={
+                <Protected>
+                  <TodoEditPage />
+                </Protected>
+              }
+            />
+            <Route
+              path="/todos/detail/:id"
+              element={
+                <Protected>
+                  <TodoDetailPage />
                 </Protected>
               }
             />
@@ -75,7 +125,6 @@ function App() {
                 </Protected>
               }
             />
-
             <Route
               path="/profile"
               element={

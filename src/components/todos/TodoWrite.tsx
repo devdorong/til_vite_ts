@@ -13,6 +13,8 @@ const TodoWrite = ({ handleChagePage }: TodoWriteProps): JSX.Element => {
   const { addTodo } = useTodos();
   const [title, setTitle] = useState<string>('');
   const [content, setContent] = useState<string>('');
+  // 데이터가 추가 되고 있는지의 상태
+  const [saving, setSaving] = useState<boolean>(false);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setTitle(e.target.value);
   };
@@ -29,6 +31,8 @@ const TodoWrite = ({ handleChagePage }: TodoWriteProps): JSX.Element => {
       return;
     }
     try {
+      // 현재 추가중
+      setSaving(true);
       const newTodo: Omit<TodoInsert, 'user_id'> = { title, content };
       // Supabase 에 데이터를 Insert 함
       // Insert 결과로 추가가 된 Todo 형태를 받아옮
@@ -38,7 +42,6 @@ const TodoWrite = ({ handleChagePage }: TodoWriteProps): JSX.Element => {
         addTodo(result);
         // 현재 페이지를 1페이지로 이동
         handleChagePage(1);
-        
       }
       // 현재 Wirte 컴포넌트 state 초기화
       setTitle('');
@@ -46,19 +49,26 @@ const TodoWrite = ({ handleChagePage }: TodoWriteProps): JSX.Element => {
     } catch (error) {
       console.log(error);
       alert('데이터 추가에 실패하였습니다.');
+    } finally {
+      setSaving(false);
     }
   };
   return (
-    <div>
-      <h2>할일 작성</h2>
-      <div>
+    <div className="card">
+      <h2 style={{ marginBottom: 'var(--space-4)', color: 'var(--gray-800)' }}>✏️할일 작성</h2>
+      <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
         <input
           type="text"
           value={title}
           onChange={e => handleChange(e)}
           onKeyDown={e => handleKeyDown(e)}
+          className="form-input"
+          style={{ flex: 1 }}
+          placeholder="새로운 할일을 추가해주세요."
         />
-        <button onClick={handleSave}>등록</button>
+        <button onClick={handleSave} className="btn btn-primary" disabled={saving}>
+          {saving ? '⏳ 등록 중...' : '등록'}
+        </button>
       </div>
     </div>
   );
