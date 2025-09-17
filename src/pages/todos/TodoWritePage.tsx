@@ -5,6 +5,7 @@ import { getProfile } from '../../lib/profile';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { createTodo } from '../../services/todoService';
+import RichTextEditor from '../../components/RichTextEditor';
 
 interface TodoWritePageProps {
   children?: React.ReactNode;
@@ -33,8 +34,11 @@ function TodoWritePage({}: TodoWritePageProps) {
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value);
   };
-  const handelContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
+  // const handelContentChange = (e:React.ChangeEvent<HTMLTextAreaElement>) => {
+  //  setTitle(e.target.value);
+  // };
+  const handelContentChange = (value: string) => {
+    setContent(value);
   };
   const handleSave = async () => {
     // 제목은 필수 입력
@@ -99,7 +103,7 @@ function TodoWritePage({}: TodoWritePageProps) {
         </div>
         <div className="form-group">
           <label className="form-label">상세 내용</label>
-          <textarea
+          {/* <textarea
             className="form-input"
             value={content}
             onChange={e => handelContentChange(e)}
@@ -107,6 +111,12 @@ function TodoWritePage({}: TodoWritePageProps) {
             rows={6}
             disabled={saving}
             onKeyDown={e => handleKeyDown(e)}
+          /> */}
+          <RichTextEditor
+            value={content}
+            onChange={handelContentChange}
+            placeholder="내용을 입력해주세요. (선택사항)"
+            disabled={saving}
           />
         </div>
         <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'end' }}>
