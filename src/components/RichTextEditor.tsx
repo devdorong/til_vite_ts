@@ -118,7 +118,7 @@ const RichTextEditor = ({
           console.log(`이미지 삽입 중 오류 : ${error}`);
           // 오류 이더라도 다시 html 을 추가해 봄.
           try {
-            const imgHtml = `<img src=${tempUrl} style={{maxWidth:"100%", height:"auto", margin: "10px 0"}} />`;
+            const imgHtml = `<img src=${tempUrl} style="max-width:"100%"; height:"auto"; margin: "10px 0"" />`;
             quill.clipboard.dangerouslyPasteHTML(insertIndex, imgHtml);
             quill.setSelection(insertIndex + 1);
           } catch (err) {
