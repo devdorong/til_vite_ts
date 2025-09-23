@@ -15,6 +15,19 @@ import { supabase } from './supabase';
 // 사용자 프로필 생성
 const createProfile = async (newUserProfile: ProfileInsert): Promise<boolean> => {
   try {
+    // 인증 상태 확인
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !sessionData.session) {
+      console.log('프로필 생성 실패 : 인증 되지 않은 사용자');
+      return false;
+    }
+
+    // 현재 사용자 일치 하는지
+    if (sessionData.session.user.id !== newUserProfile.id) {
+      console.log('프로필 생성 실패: 사용자 Id 불일치');
+      return false;
+    }
+
     const { error, data } = await supabase.from('profiles').insert([{ ...newUserProfile }]);
     if (error) {
       console.log(`프로필 추가에 실패  : `, {
@@ -175,7 +188,9 @@ const removeAvatar = async (userId: string): Promise<boolean> => {
         // 파일 삭제 성공
         deleteSuccess = true;
       }
-    } catch (err) {}
+    } catch (err) {
+      console.log(err);
+    }
     // 2. 만약 avatar_url 을 제대로 파싱 못했다면?
     if (!deleteSuccess) {
       try {
@@ -185,7 +200,7 @@ const removeAvatar = async (userId: string): Promise<boolean> => {
           .list('avatars', { limit: 1000 });
 
         if (!listError && files && files.length > 0) {
-          const userFiles = files.filter(item => TimeRanges.name.startsWith(`${userId}-`));
+          const userFiles = files.filter(item => item.name.startsWith(`${userId}-`));
           if (userFiles.length > 0) {
             const filePath = userFiles.map(item => `avatars/${item.name}`);
             const { error } = await supabase.storage.from('user-images').remove(filePath);

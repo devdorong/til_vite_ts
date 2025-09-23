@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import KakaoLoginButton from '../components/KakaoLoginButton';
 
-function SigninPage() {
+function SignInPage() {
   const navigate = useNavigate();
   const { signIn } = useAuth();
   const [email, setEmail] = useState<string>('');
@@ -51,6 +52,16 @@ function SigninPage() {
             로그인
           </button>
         </form>
+
+        {/* SNS 로그인 영역 */}
+        <div style={{ display: 'flex', alignItems: 'center', margin: 'var(--space-6)' }}>
+          <div style={{ flex: 1, height: 1, backgroundColor: 'var(--gray-300)' }}></div>
+          <span style={{ padding: '0 var(--space-4)', fontSize: '14px' }}>또는</span>
+          <div style={{ flex: 1, height: 1, backgroundColor: 'var(--gray-300)' }}></div>
+        </div>
+        {/* 카카오 로그인 버튼 : 오류 메시지는 사용자도 볼 수 있어야 함.*/}
+        <KakaoLoginButton onError={error => setMsg(`카카오 로그인 오류 : ${error}`)} />
+
         {/* 메시지 출력 */}
         {msg && (
           <p
@@ -71,4 +82,4 @@ function SigninPage() {
   );
 }
 
-export default SigninPage;
+export default SignInPage;
