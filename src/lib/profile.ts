@@ -49,7 +49,7 @@ const createProfile = async (newUserProfile: ProfileInsert): Promise<boolean> =>
 // 사용자 프로필 조회
 const getProfile = async (userId: string): Promise<Profile | null> => {
   try {
-    const { error, data } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    const { error, data } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
     if (error) {
       console.log(error.message);
       return null;
@@ -99,7 +99,7 @@ const uploadAvatar = async (file: File, userId: string): Promise<string | null> 
     // 파일명이 중복되지 않도록 이름을 생성함.
     const fileExt = file.name.split('.').pop();
     const fileName = `${userId}-${Date.now()}.${fileExt}`;
-    const filePath = `avatars/${fileName}`;
+    const filePath = `${userId}/avatars/${Date.now()}.${fileExt}`;
 
     // storage 에 bucket 이 존재하는지 검사
     const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();

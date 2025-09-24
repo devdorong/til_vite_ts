@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getProfile, removeAvatar, updateProfile, uploadAvatar } from '../lib/profile';
 import type { Profile, ProfileUpdate } from '../types/TodoType';
 import Loading from '../components/Loading';
+import { supabase } from '../lib/supabase';
 
 /**
  * 사용자 프로필 페이지
@@ -12,7 +13,8 @@ import Loading from '../components/Loading';
  */
 function ProfilePage() {
   // 회원 기본 정보 (카카오, 구글 회원 탈퇴 추가)
-  const { user, deleteAccount, unlinkKakaoAccount, unlinkGoogleAccount } = useAuth();
+  const { user, deleteAccount, unlinkKakaoAccount, unlinkGoogleAccount, changePassword } =
+    useAuth();
   // 데이터 가져오는 동안 로딩
   const [loading, setLoading] = useState<boolean>(true);
   // 사용자 프로필
@@ -23,6 +25,11 @@ function ProfilePage() {
   const [edit, setEdit] = useState<boolean>(false);
   // 회원 닉네임 보관
   const [nickName, setNickName] = useState<string>('');
+  // 새 비밀번호
+  const [newPassword, setNewPassword] = useState('');
+  // 새 비밀번호 확인
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordMessage, setPasswordMessage] = useState<string>('');
 
   // 사용자 아바타 이미지를 위한 상태관리
   // 이미지 업로드 상태 표현
@@ -230,6 +237,37 @@ function ProfilePage() {
       fileInputRef.current.value = '';
     }
   };
+  // 비밀번호 변경 확인
+  const handlePasswordChange = async () => {
+    // 입력값 검출
+    if (!newPassword.trim()) {
+      setPasswordMessage('새 비밀번호를 입력하세요.');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setPasswordMessage('비밀번호는 최소6자 이상이어야 합니다.');
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage('비밀번호가 일치하지 않습니다.');
+    }
+    try {
+      const result = await changePassword(newPassword);
+      if (result.success) {
+        setPasswordMessage('비밀번호가 성공적으로 변경되었습니다.');
+        // 폼 초기화
+        setNewPassword('');
+        setConfirmPassword('');
+        // 3초 후 메시지 자동 제거
+        setTimeout(() => {
+          setPasswordMessage('');
+        }, 3000);
+      } else if (result.error) {
+        setPasswordMessage(`비밀번호 변경 실패 : ${result.error}`);
+      }
+    } catch (err) {
+      setPasswordMessage('비밀번호 변경 중 오류가 발생했습니다.');
+    }
+  };
 
   useEffect(() => {
     loadProfile();
@@ -374,7 +412,58 @@ function ProfilePage() {
                     className="form-input"
                     placeholder="닉네임을 입력하세요"
                   />
-                  <br />
+                  {/* 이메일 로그인 사용자에게만 비밀번호 변경 섹션 표시 */}
+                  {(!user?.app_metadata.provider || user?.app_metadata.provider === 'email') && (
+                    <div className="form-group">
+                      <label className="form-label">🔒 비밀번호 변경</label>
+                      <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+                        <input
+                          type="password"
+                          className="form-input"
+                          style={{ flex: 1 }}
+                          placeholder="새 비밀번호(최소 6자)"
+                          value={newPassword}
+                          onChange={e => setNewPassword(e.target.value)}
+                        />
+                        <input
+                          type="password"
+                          className="form-input"
+                          style={{ flex: 1 }}
+                          placeholder="비밀번호 확인"
+                          value={confirmPassword}
+                          onChange={e => setConfirmPassword(e.target.value)}
+                        />
+                        <button
+                          className="btn btn-primary"
+                          style={{ whiteSpace: 'nowrap' }}
+                          onClick={handlePasswordChange}
+                        >
+                          변경
+                        </button>
+                      </div>
+                      {/* 비밀번호 변경 메시지 */}
+                      {passwordMessage && (
+                        <div
+                          style={{
+                            marginTop: 'var(--space-2)',
+                            padding: 'var(--space-2)',
+                            borderRadius: 'var(--radius-sm)',
+                            fontSize: '14px',
+                            backgroundColor: passwordMessage.includes('성공')
+                              ? 'var(--success-50)'
+                              : '#fef2f2',
+                            color: passwordMessage.includes('성공')
+                              ? 'var(--success-600)'
+                              : '#dc2626',
+                            border: `1px solid ${passwordMessage.includes('성공') ? 'var(--success-600)' : '#dc2626'}`,
+                          }}
+                        >
+                          {passwordMessage}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
                   <div className="form-group">
                     <h4 className="form-label">아바타 편집</h4>
                     <div style={{ marginBottom: 'var(--space-4)' }}>
@@ -440,7 +529,14 @@ function ProfilePage() {
                           </p>
                         </div>
                       ) : originalAvatarUrl ? (
-                        <div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                          }}
+                        >
                           <img
                             src={originalAvatarUrl}
                             style={{

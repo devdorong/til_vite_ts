@@ -34,13 +34,7 @@ const InfiniteTodoWrite = () => {
 
 // 용서하세요. 목록 컴포넌트
 const InfiniteTodoList = () => {
-  const {
-    loading,
-    hasMore,
-    loadMoreTodos,
-    todos,
-    totalCount,
-  } = useInfiniteScroll();
+  const { loading, hasMore, loadMoreTodos, todos, totalCount } = useInfiniteScroll();
   const { user } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
 
@@ -158,9 +152,8 @@ const InfiniteTodoList = () => {
                 };
 
                 return (
-                  <Link to={`/todos/detail/${item.id}`}>
+                  <Link to={`/todos/detail/${item.id}`} key={item.id}>
                     <li
-                      key={item.id}
                       className={`todo-item ${item.completed ? 'completed' : ''}`}
                       style={{
                         backgroundColor: index % 2 === 0 ? 'white' : 'var(--gray-50)',

@@ -287,6 +287,55 @@ function SignUpPage() {
               ? '이메일 및 닉네임 중복 확인 필요'
               : '회원가입'}
           </button>
+          {/* 중복 확인 상태 안내 */}
+          {(emailCheckStatus === 'idle' || nicknameCheckStatus === 'idle') && (
+            <div
+              style={{
+                marginTop: '8px',
+                padding: '8px 12px',
+                backgroundColor: '#fef3c7',
+                border: '1px solid #f59e0b',
+                borderRadius: '4px',
+                fontSize: '14px',
+                color: '#92400e',
+                textAlign: 'center',
+              }}
+            >
+              ⚠️ 이메일 및 닉네임 중복 확인을 완료해주세요.
+            </div>
+          )}
+          {emailCheckStatus === 'taken' && (
+            <div
+              style={{
+                marginTop: '8px',
+                padding: '8px 12px',
+                backgroundColor: '#fee2e2',
+                border: '1px solid #ef4444',
+                borderRadius: '4px',
+                fontSize: '14px',
+                color: '#dc2626',
+                textAlign: 'center',
+              }}
+            >
+              ❌ 이미 사용 중인 이메일입니다. 다른 이메일을 사용하거나 해당 이메일로 로그인해주세요.
+            </div>
+          )}
+          {nicknameCheckStatus === 'taken' && (
+            <div
+              style={{
+                marginTop: '8px',
+                padding: '8px 12px',
+                backgroundColor: '#fee2e2',
+                border: '1px solid #ef4444',
+                borderRadius: '4px',
+                fontSize: '14px',
+                color: '#dc2626',
+                textAlign: 'center',
+              }}
+            >
+              ❌ 이미 사용 중인 닉네임입니다. 다른 닉네임을 사용해주세요.
+            </div>
+          )}
         </form>
 
         <div style={{ display: 'flex', alignItems: 'center', margin: 'var(--space-6)' }}>

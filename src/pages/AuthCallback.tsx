@@ -21,16 +21,30 @@ function AuthCallback() {
 
   // 닉네임 추출
   const extractNickname = (user: any, isOAuthLogin: boolean, loginType: string): string => {
-    let nickName = user.user_metadata.nickname;
+    let nickName = '';
+    // if (!isOAuthLogin && !nickName) {
+    //   nickName = user.user_metadata.nickname;
+    // }
+
     if (isOAuthLogin && !nickName) {
       nickName =
+        user.user_metadata.nickname ||
         user.app_metadata.full_name ||
         user.app_metadata.name ||
         user.user_metadata.full_name ||
         user.user_metadata.name ||
         user.email?.split('@')[0] ||
         (loginType === '카카오 사용자' ? '카카오 사용자' : '구글 사용자');
+    } else {
+      // 이메일 로그인인 경우 - 회원가입 시 저장한 닉네임 사용
+      nickName = user.user_metadata.nickName || user.user_metadata.nickname;
+
+      // 닉네임이 없으면 이메일에서 추출
+      if (!nickName) {
+        nickName = user.email?.split('@')[0] || '이메일사용자';
+      }
     }
+
     return nickName;
   };
 
