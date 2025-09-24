@@ -2,6 +2,7 @@ import { useState } from 'react';
 import KakaoLoginButton from '../components/KakaoLoginButton';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
+import GoogleLoginButton from '../components/GoogleLoginButton';
 
 function SignUpPage() {
   const { checkEmailExists, checkNicknameExists } = useAuth();
@@ -298,6 +299,12 @@ function SignUpPage() {
           onError={error => setMsg(`카카오 로그인 오류 : ${error}`)}
           onSuccess={message => setMsg(message)}
         />
+        <div style={{ marginTop: 'var(--space-3)' }}>
+          <GoogleLoginButton
+            onError={error => setMsg(`구글 로그인 오류 : ${error}`)}
+            onSuccess={message => setMsg(message)}
+          />
+        </div>
 
         {msg && (
           <p
