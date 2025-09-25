@@ -150,3 +150,39 @@ const value: AuthContextType = {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 ```
+
+## 3. 인증 후 이동 및 profiles 업데이트
+
+- /src/pages/AuthCallback.tsx
+- 이메일 사용자 가입시 profiles 에 insert 안되는 문제 (nickname 문제)
+
+```tsx
+// 닉네임 추출
+const extractNickname = (user: any, isOAuthLogin: boolean, loginType: string): string => {
+  let nickName = '';
+  // if (!isOAuthLogin && !nickName) {
+  //   nickName = user.user_metadata.nickname;
+  // }
+
+  if (isOAuthLogin && !nickName) {
+    nickName =
+      user.user_metadata.nickname ||
+      user.app_metadata.full_name ||
+      user.app_metadata.name ||
+      user.user_metadata.full_name ||
+      user.user_metadata.name ||
+      user.email?.split('@')[0] ||
+      (loginType === '카카오 사용자' ? '카카오 사용자' : '구글 사용자');
+  } else {
+    // 이메일 로그인인 경우 - 회원가입 시 저장한 닉네임 사용
+    nickName = user.user_metadata.nickName || user.user_metadata.nickname;
+
+    // 닉네임이 없으면 이메일에서 추출
+    if (!nickName) {
+      nickName = user.email?.split('@')[0] || '이메일사용자';
+    }
+  }
+
+  return nickName;
+};
+```
