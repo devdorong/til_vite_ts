@@ -14,6 +14,9 @@ import TodoListPage from './pages/todos/TodoListPage';
 import TodoWritePage from './pages/todos/TodoWritePage';
 import TodoEditPage from './pages/todos/TodoEditPage';
 import TodoDetailPage from './pages/todos/TodoDetailPage';
+import DirectChatPage from './pages/chat/DirectChatPage';
+// 1:1 채팅 관련 css
+import './components/chat/chat.css';
 
 const TopBar = () => {
   const { signOut, user } = useAuth();
@@ -44,6 +47,9 @@ const TopBar = () => {
           </Link>
           <Link className="nav-link" to={'/todos-infinite'}>
             무한스크롤 할일
+          </Link>
+          <Link className="nav-link" to={'/chat'}>
+            1 : 1 채팅
           </Link>
           <Link className="nav-link" to={'/profile'}>
             프로필
@@ -143,6 +149,15 @@ function App() {
               element={
                 <Protected>
                   <AdminPage />
+                </Protected>
+              }
+            />
+            {/* 1 : 1 채팅 */}
+            <Route
+              path="/chat"
+              element={
+                <Protected>
+                  <DirectChatPage />
                 </Protected>
               }
             />
