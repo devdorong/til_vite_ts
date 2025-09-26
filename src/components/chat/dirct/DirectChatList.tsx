@@ -1,3 +1,5 @@
+import { RiSearchLine } from 'react-icons/ri';
+
 /**
  * - 채팅 네비게이션 : 사용자가 참여중인 채팅방 목록 제공
  * - 상태 표시 : 읽지 않은 메시지와 최신 활동 표시
@@ -14,7 +16,10 @@ const DirectChatList = () => {
       {/* 사용자 검색 UI - 새 채팅 버튼 클릭 시 표시 */}
       <div className="user-search">
         {/* 사용자 검색 필드 */}
-        <input type="text" placeholder="사용자 검색..." className="search-input" />
+        <div className="search-container">
+          <input type="text" placeholder="사용자 검색..." className="search-input" />
+          <RiSearchLine color='#999' className="search-icon" />
+        </div>
         {/* 검색 결과 목록 */}
         <div className="search-result">
           {/* 검색된 사용자 출력 */}

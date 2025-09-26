@@ -1,3 +1,5 @@
+import MessageInput from '../common/MessageInput';
+
 const DirectChatRoom = () => {
   return (
     <div className="chat-room">
@@ -34,23 +36,46 @@ const DirectChatRoom = () => {
           <div className="date-divider">
             <span>오늘</span>
           </div>
-          {/* 해당 날짜의 메시지 들 */}
-          {/* 나의 메시지 - 오른쪽 정렬 */}
-          <div className="message-item my-message">
-            {/* 내 메시지 : 말풍선, 시간, 아바타 (오른쪽 정렬) */}
-            <div className="message-bubble">
-              <div className="message-text">채팅인데 내가 작성했지요.</div>
-              <div className="message-time">13:25</div>
+
+          {/* 메시지들 묶음 컨테이너 */}
+          <div className="message-group-container">
+            {/* 해당 날짜의 메시지 들 */}
+            {/* 나의 메시지 - 오른쪽 정렬 */}
+            <div className="message-item my-message">
+              {/* 내 메시지 : 말풍선, 시간, 아바타 (오른쪽 정렬) */}
+              <div className="message-bubble">
+                <div className="message-text">채팅인데 내가 작성했지요.</div>
+                <div className="message-time">13:25</div>
+              </div>
+              <div className="message-avatar">
+                {/* 나의 아바타 이미지가 있는 경우 */}
+                {/* <img src="https://avatars.githubusercontent.com/u/214068720?v=4" alt="나의 아바타" /> */}
+                {/* 나의 아바타 이미지가 없는 경우 */}
+                <div className="avatar-placeholder">롱</div>
+              </div>
             </div>
-            <div className="message-avatar">
-              
+            {/* 대상의 메시지 - 왼쪽 정렬 */}
+            <div className="message-item other-message">
+              <div className="message-avatar">
+                {/* 나의 아바타 이미지가 있는 경우 */}
+                <img
+                  src="https://avatars.githubusercontent.com/u/214068720?v=4"
+                  alt="나의 아바타"
+                />
+                {/* 나의 아바타 이미지가 없는 경우 */}
+                {/* <div className="avatar-placeholder">롱</div> */}
+              </div>
+              {/* 내 메시지 : 말풍선, 시간, 아바타 (오른쪽 정렬) */}
+              <div className="message-bubble">
+                <div className="message-text">채팅인데 내가 작성했지요.</div>
+                <div className="message-time">13:25</div>
+              </div>
             </div>
           </div>
-          {/* 대상의 메시지 - 왼쪽 정렬 */}
-          <div className="message-item other-message">메시지</div>
         </div>
       </div>
       {/* 메시지 입력 컴포넌트 */}
+      <MessageInput />
     </div>
   );
 };
