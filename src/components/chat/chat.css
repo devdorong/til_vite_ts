@@ -94,6 +94,10 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
+  padding-right: 30px;
+}
+.search-input:focus {
+  border: 1px solid #ff7e55;
 }
 
 /* 검색 결과 컨테이너 - 스크롤 가능한 최대 높이 설정 */
@@ -179,9 +183,10 @@
   border-bottom: 1px solid #f5f5f5;
   transition: all 0.2s ease;
   background-color: #fff;
+  border-right: 3px solid #fff;
 }
 /* 선택된 채팅 아이템 */
-.chat-item.selectd {
+.chat-item.selected {
   background-color: #fff2ee;
   border-right: 3px solid #ff5722;
 }
@@ -191,15 +196,15 @@
   margin-right: 16px;
 }
 .chat-avatar img {
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #f0f0f0;
 }
 .chat-avatar .avatar-placeholder {
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: linear-gradient(135deg, #ee3900, #ff7e55);
   color: #fff;
@@ -564,6 +569,7 @@
 /* 입력 컨테이너 - 텍스트, 전송 버튼 */
 .input-container {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
@@ -635,4 +641,21 @@
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* 에러 메시지 표시 */
+.error-message {
+  padding: 16px;
+  text-align: center;
+  color: #dc3545;
+}
+/* 에러 메시지 재시도 버튼 */
+.error-message button {
+  margin-top: 8px;
+  padding: 8px 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }

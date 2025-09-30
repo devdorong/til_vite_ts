@@ -37,6 +37,9 @@ const mockUser: ChatUser[] = [
   { id: '2', email: 'user2@example.com', nickname: '고길동', avatar_url: null },
   { id: '3', email: 'user3@example.com', nickname: '이영희', avatar_url: null },
   { id: '4', email: 'user4@example.com', nickname: '정수진', avatar_url: null },
+  { id: '5', email: 'user4@example.com', nickname: '도로롱', avatar_url: null },
+  { id: '6', email: 'user4@example.com', nickname: '도도롱', avatar_url: null },
+  { id: '7', email: 'user4@example.com', nickname: '도롱넴', avatar_url: null },
 ];
 
 /**
