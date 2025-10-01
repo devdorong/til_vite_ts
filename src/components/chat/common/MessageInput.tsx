@@ -38,7 +38,7 @@ const MessageInput = ({ chatId }: MessageInputProps) => {
       // DirectChatContext의 sendMessage
       const success = await sendMessage({
         chat_id: chatId,
-        constent: message.trim(),
+        content: message.trim(),
       });
 
       // 전송 성공시 처리

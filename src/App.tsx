@@ -15,7 +15,7 @@ import TodoWritePage from './pages/todos/TodoWritePage';
 import TodosInfinitePage from './pages/TodosInfinitePage';
 // 1:1 채팅 관련 css
 import './components/chat/chat.css';
-import { DirectChatContextProvider } from './contexts/DirectChatContext';
+import { DirectChatProider } from './contexts/DirectChatContext';
 
 const TopBar = () => {
   const { signOut, user } = useAuth();
@@ -78,7 +78,7 @@ const TopBar = () => {
 
 function App() {
   return (
-    <DirectChatContextProvider>
+    <DirectChatProider>
       <AuthProvider>
         <div className="container">
           <div className="page-header">
@@ -165,7 +165,7 @@ function App() {
           </Router>
         </div>
       </AuthProvider>
-    </DirectChatContextProvider>
+    </DirectChatProider>
   );
 }
 
