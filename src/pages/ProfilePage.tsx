@@ -390,17 +390,6 @@ function ProfilePage() {
             사용자 추가 정보
           </h3>
           <div className="form-group">
-            <label className="form-label">아이디</label>
-            <div
-              style={{
-                padding: 'var(--space-3)',
-                backgroundColor: 'var(--gray-50)',
-                borderRadius: 'var(--radius-md)',
-                color: 'var(--gray-700)',
-              }}
-            >
-              {profileData?.id}
-            </div>
             {edit ? (
               <>
                 <div className="form-group">
