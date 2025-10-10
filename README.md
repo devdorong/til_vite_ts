@@ -844,7 +844,7 @@ export const useDirectChat = () => {
 
 - `/src/components/chat/direct/DirectChatList.tsx`
 
-- Realtime 적용법 체크 해보기
+- Realtime 적용법 체크 해보기.
 
 ```tsx
 // Supabase Realtime 으로 실시간 동기화
