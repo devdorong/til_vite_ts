@@ -5,6 +5,9 @@ import KakaoLoginButton from '../components/KakaoLoginButton';
 import GoogleLoginButton from '../components/GoogleLoginButton';
 
 function SignInPage() {
+  // 테스트용
+  let a = 0;
+  console.log(a);
   const navigate = useNavigate();
   const { signIn } = useAuth();
   const [email, setEmail] = useState<string>('');
