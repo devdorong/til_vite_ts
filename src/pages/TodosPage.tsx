@@ -41,6 +41,7 @@ function TodosPage() {
       </div>
       <TodoProvider currentPage={currentPage} limit={itemsPerPage}>
         <TodosContent
+          profile={profile}
           currentPage={currentPage}
           itemsPerPage={itemsPerPage}
           handleChagePage={handleChagePage}

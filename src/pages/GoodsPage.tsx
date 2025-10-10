@@ -1,6 +1,6 @@
 import React from 'react';
 import GoodList from '../components/shop/GoodList';
-import { box } from './HomePage';
+import { box } from '../components/shop/Cart';
 
 function GoodsPage() {
   return (

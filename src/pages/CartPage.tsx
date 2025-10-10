@@ -1,6 +1,5 @@
 import React from 'react';
-import Cart from '../components/shop/Cart';
-import { box } from './HomePage';
+import Cart, { box } from '../components/shop/Cart';
 
 function CartPage() {
   return (

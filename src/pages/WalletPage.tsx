@@ -1,6 +1,6 @@
 import React from 'react';
 import Wallet from '../components/shop/Wallet';
-import { box } from './HomePage';
+import { box } from '../components/shop/Cart';
 
 function WalletPage() {
   return (

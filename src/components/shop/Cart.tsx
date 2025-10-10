@@ -1,28 +1,28 @@
 import React from 'react';
 import { useShop, useShopSelects } from '../../features/shop';
 
+export const box: React.CSSProperties = {
+  border: '2px solid #eee',
+  borderRadius: 12,
+  padding: 16,
+  marginBottom: 16,
+  background: '#fff',
+};
+export const boxrow: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  padding: '8px 0',
+  borderBottom: '1px dashed #eee',
+};
+export const buttonStyle: React.CSSProperties = {
+  padding: 10,
+};
 const Cart = () => {
   // ts 자리
   const { balance, cart, removeCartOne, resetCart, clearCart, buyAll, addCart } = useShop();
   const { getGood, total } = useShopSelects();
 
-  const box: React.CSSProperties = {
-    border: '2px solid #eee',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    background: '#fff',
-  };
-  const boxrow: React.CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '8px 0',
-    borderBottom: '1px dashed #eee',
-  };
-  const buttonStyle: React.CSSProperties = {
-    padding: 10,
-  };
   // tsx 자리
   return (
     <div style={box}>
