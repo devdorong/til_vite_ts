@@ -873,7 +873,7 @@ useEffect(() => {
 }, [loadChats]);
 ```
 
-- 전체 코드
+- 전체 코드.
 
 ```tsx
 import { useEffect, useState } from 'react';
