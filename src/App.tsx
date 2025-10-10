@@ -15,7 +15,7 @@ import TodosInfinitePage from './pages/TodosInfinitePage';
 // 1:1 채팅 관련 css
 import './components/chat/chat.css';
 import { DirectChatProider } from './contexts/DirectChatContext';
-import SignInPage from './pages/SignInPage';
+import SignInPage from './pages/SignInP';
 const TopBar = () => {
   const { signOut, user } = useAuth();
   // 관리자인 경우 메뉴 추가로 출력하기
