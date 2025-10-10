@@ -6,7 +6,6 @@ import AuthCallback from './pages/AuthCallback';
 import DirectChatPage from './pages/chat/DirectChatPage';
 import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
-import SigninPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import TodoDetailPage from './pages/todos/TodoDetailPage';
 import TodoEditPage from './pages/todos/TodoEditPage';
@@ -16,6 +15,7 @@ import TodosInfinitePage from './pages/TodosInfinitePage';
 // 1:1 채팅 관련 css
 import './components/chat/chat.css';
 import { DirectChatProider } from './contexts/DirectChatContext';
+import SignInPage from './pages/SignInPage';
 
 const TopBar = () => {
   const { signOut, user } = useAuth();
@@ -94,7 +94,7 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/signup" element={<SignUpPage />} />
-              <Route path="/signin" element={<SigninPage />} />
+              <Route path="/signin" element={<SignInPage />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route
                 path="/todos"
