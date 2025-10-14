@@ -1,10 +1,9 @@
-// 2. 리듀서
-
+import { initialState } from './state';
 import type { CartType, ShopAction, ShopStateType } from './types';
 import { ShopActionType } from './types';
 import { calcTotal } from './utils';
 
-export function shopReducer(state: ShopStateType, action: ShopAction) {
+export function reducer(state: ShopStateType, action: ShopAction) {
   switch (action.type) {
     case ShopActionType.ADD_CART: {
       const { id } = action.payload; // 제품의 ID
@@ -16,27 +15,29 @@ export function shopReducer(state: ShopStateType, action: ShopAction) {
         arr = state.cart.map(item => (item.id === id ? { ...item, qty: item.qty + 1 } : item));
       } else {
         // state.cart 에 새 제품 추가, qty 는 1개
-        arr = [...state.cart, { id, qty: 1 }];
+        arr = [...state.cart, { id: id, qty: 1 }];
       }
       return { ...state, cart: arr };
     }
     case ShopActionType.REMOVE_CART_ONE: {
-      const { id } = action.payload;
+      const { id } = action.payload; // 1개 빼줄 제품의 ID
       // id 제품이 배열에 있는가? qty 가 있는가?
       const existGood = state.cart.find(item => item.id === id);
-      let arr: CartType[] = [];
+
       if (!existGood) {
-        // 제품이 없다면?
+        // 제품이 없다면...
         return state;
-      } else {
-        if (existGood.qty > 1) {
-          // 제품이 1개 이상이면
-          arr = state.cart.map(item => (item.id === id ? { ...item, qty: item.qty - 1 } : item));
-        } else {
-          // 제품이 1개 담겼어요.
-          arr = state.cart.filter(item => item.id !== id);
-        }
       }
+
+      let arr: CartType[] = [];
+      if (existGood.qty > 1) {
+        // 제품이 최소 2개 이상이면
+        arr = state.cart.map(item => (item.id === id ? { ...item, qty: item.qty - 1 } : item));
+      } else {
+        // 제품이 1개
+        arr = state.cart.filter(item => item.id !== id);
+      }
+
       return { ...state, cart: arr };
     }
     case ShopActionType.CLEAR_CART_ITEM: {
@@ -46,7 +47,7 @@ export function shopReducer(state: ShopStateType, action: ShopAction) {
       return { ...state, cart: arr };
     }
     case ShopActionType.BUY_ALL: {
-      // 총 금액 계산
+      // 총 금액계산
       const total = calcTotal(state.cart, state.goods);
       if (total > state.balance) {
         alert('돈이 부족합니다. 장바구니를 줄이세요');
@@ -54,13 +55,8 @@ export function shopReducer(state: ShopStateType, action: ShopAction) {
       }
       return { ...state, balance: state.balance - total, cart: [] };
     }
-    case ShopActionType.RESET: {
-      return { ...state, cart: [] };
-    }
-    case ShopActionType.ADD_MONEY: {
-      const total = 100000;
-      return { ...state, balance: state.balance + total };
-    }
+    case ShopActionType.RESET:
+      return initialState;
     default:
       return state;
   }

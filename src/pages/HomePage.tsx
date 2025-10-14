@@ -118,37 +118,33 @@ function HomePage() {
           </div>
         </div>
       </div>
-      {/* 추가 기능 소개 섹션 */}
+      {/* 추가 기능 섹션 */}
       {user && (
-        <>
-          <div className="card">
-            <h3 style={{ marginBottom: 'var(--space-4)', color: 'var(--gray-800)' }}>
-              🎸 추가 기능
-            </h3>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-                gap: 'var(--space-4)',
-              }}
+        <div className="card">
+          <h3 style={{ marginBottom: 'var(--space-4)', color: 'var(--gray-800)' }}>🔍 추가 기능</h3>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+              gap: 'var(--space-4)',
+            }}
+          >
+            <Link
+              to={'/profile'}
+              className="btn btn-secondary"
+              style={{ textDecoration: 'none', textAlign: 'center' }}
             >
-              <Link
-                to={'/profile'}
-                className="btn btn-secondary"
-                style={{ textDecoration: 'none', textAlign: 'center' }}
-              >
-                🔑프로필 관리
-              </Link>
-              <Link
-                to={'/profile'}
-                className="btn btn-secondary"
-                style={{ textDecoration: 'none', textAlign: 'center' }}
-              >
-                📆캘린더
-              </Link>
-            </div>
+              🔑 프로필 관리
+            </Link>
+            <Link
+              to={'/profile'}
+              className="btn btn-secondary"
+              style={{ textDecoration: 'none', textAlign: 'center' }}
+            >
+              📆 캘린더
+            </Link>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

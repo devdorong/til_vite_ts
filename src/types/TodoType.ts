@@ -1,6 +1,6 @@
 export type TodoType = { id: string; title: string; completed: boolean };
 
-// 개발자가 직접 작성해줌
+// 개발자가 직접 작성해 줌.
 export type Todo = Database['public']['Tables']['todos']['Row'];
 export type TodoInsert = Database['public']['Tables']['todos']['Insert'];
 export type TodoUpdate = Database['public']['Tables']['todos']['Update'];
@@ -16,11 +16,6 @@ export type DeleteRequestInsert =
   Database['public']['Tables']['account_deletion_requests']['Insert'];
 export type DeleteRequestUpdate =
   Database['public']['Tables']['account_deletion_requests']['Update'];
-
-// 메마 타입 지정
-export type Memo = Database['public']['Tables']['memos']['Row'];
-export type MemoInsert = Database['public']['Tables']['memos']['Insert'];
-export type MemoUpdate = Database['public']['Tables']['memos']['Update'];
 
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 

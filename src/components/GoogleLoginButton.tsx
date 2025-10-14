@@ -2,13 +2,12 @@ import { useAuth } from '../contexts/AuthContext';
 
 interface GoogleLoginButtonProps {
   children?: React.ReactNode;
-  onError?: (error?: string) => void;
+  onError?: (error: string) => void;
   onSuccess?: (message: string) => void;
 }
 const GoogleLoginButton = ({ onError, onSuccess }: GoogleLoginButtonProps) => {
   // 구글 로그인 사용
   const { signInWithGoogle } = useAuth();
-
   // 구글 로그인 실행
   const handleGoogleLogin = async () => {
     try {
@@ -21,15 +20,16 @@ const GoogleLoginButton = ({ onError, onSuccess }: GoogleLoginButtonProps) => {
       } else {
         console.log('구글 로그인 성공');
         if (onSuccess) {
-          onSuccess('구글 로그인이 성공하였습니다.');
+          onSuccess('구글 로그인이 성공했습니다.');
         }
       }
     } catch (err) {
-      console.log(`구글 로그인 오류 : ${err}`);
+      console.log('구글 로그인 오류 : ', err);
     }
   };
   return (
     <button
+      type="button"
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -79,7 +79,7 @@ const GoogleLoginButton = ({ onError, onSuccess }: GoogleLoginButtonProps) => {
           fill="#EA4335"
         />
       </svg>
-      Google 로그인
+      구글 로그인
     </button>
   );
 };

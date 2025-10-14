@@ -3,71 +3,71 @@ import Protected from './components/Protected';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import AdminPage from './pages/AdminPage';
 import AuthCallback from './pages/AuthCallback';
-import DirectChatPage from './pages/chat/DirectChatPage';
 import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
+import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
-import TodoDetailPage from './pages/todos/TodoDetailPage';
-import TodoEditPage from './pages/todos/TodoEditPage';
-import TodoListPage from './pages/todos/TodoListPage';
-import TodoWritePage from './pages/todos/TodoWritePage';
+import TodoDetailPage from './pages/TodoDetailPage';
+import TodoEditPage from './pages/TodoEditPage';
+import TodoListPage from './pages/TodoListPage';
 import TodosInfinitePage from './pages/TodosInfinitePage';
+import TodoWritePage from './pages/TodoWritePage';
+import DirectChatPage from './pages/chat/DirectChatPage';
 // 1:1 채팅 관련 css
 import './components/chat/chat.css';
-import { DirectChatProider } from './contexts/DirectChatContext';
-import SignInPage from './pages/SignInP';
+import { DirectChatProider, useDirectChat } from './contexts/DirectChatContext';
+
 const TopBar = () => {
   const { signOut, user } = useAuth();
+  const { hasNewChatNotification } = useDirectChat();
   // 관리자인 경우 메뉴 추가로 출력하기
   // isAdmin 에는 true/false
-  const isAdmin = user?.email === 'dev.dorong@gmail.com';
+  const isAdmin = user?.email === 'tarolong@naver.com';
 
   return (
-    <nav
-      style={{
-        display: 'flex',
-        gap: '20px',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        margin: '0 auto',
-        padding: '20px',
-      }}
-      className="nav"
-    >
-      <Link to={'/'} className="nav-link">
+    <nav className="nav">
+      <Link to="/" className="nav-link">
         홈
       </Link>
-
-      {user ? (
-        <>
-          <Link className="nav-link" to={'/todos'}>
-            할일
-          </Link>
-          <Link className="nav-link" to={'/todos-infinite'}>
-            무한스크롤 할일
-          </Link>
-          <Link className="nav-link" to={'/chat'}>
-            1 : 1 채팅
-          </Link>
-          <Link className="nav-link" to={'/profile'}>
-            프로필
-          </Link>
-          <button onClick={signOut} className="btn btn-secondary btn-sm">
-            로그아웃
-          </button>
-        </>
-      ) : (
-        <>
-          <Link className="nav-link" to={'/signup'}>
-            회원가입
-          </Link>
-          <Link className="nav-link" to={'/signin'}>
-            로그인
-          </Link>
-        </>
+      {user && (
+        <Link to="/todos" className="nav-link">
+          할일
+        </Link>
       )}
+      {user && (
+        <Link to="/todos-infinite" className="nav-link">
+          무한스크롤 할일
+        </Link>
+      )}
+      {!user && (
+        <Link to="/signup" className="nav-link">
+          회원가입
+        </Link>
+      )}
+      {!user && (
+        <Link to="/signin" className="nav-link">
+          로그인
+        </Link>
+      )}
+      {user && (
+        <Link to="/chat" className="nav-link">
+          1 : 1 채팅
+          {hasNewChatNotification && <span className="notification-badge">●</span>}
+        </Link>
+      )}
+      {user && (
+        <Link to="/profile" className="nav-link">
+          프로필
+        </Link>
+      )}
+      {user && (
+        <button onClick={signOut} className="btn btn-secondary btn-sm">
+          로그아웃
+        </button>
+      )}
+
       {isAdmin && (
-        <Link className="nav-link" to={'/admin'}>
+        <Link to="/admin" className="nav-link">
           관리자
         </Link>
       )}
@@ -77,16 +77,16 @@ const TopBar = () => {
 
 function App() {
   return (
-    <DirectChatProider>
-      <AuthProvider>
+    <AuthProvider>
+      <DirectChatProider>
         <div className="container">
           <div className="page-header">
-            <h1 className="page-title">📕Todo Service</h1>
+            <h1 className="page-title">👩‍🦰 Todo Service</h1>
           </div>
           <Router
             future={{
-              v7_startTransition: true,
               v7_relativeSplatPath: true,
+              v7_startTransition: true,
             }}
           >
             <TopBar />
@@ -135,6 +135,7 @@ function App() {
                   </Protected>
                 }
               />
+
               <Route
                 path="/profile"
                 element={
@@ -143,6 +144,7 @@ function App() {
                   </Protected>
                 }
               />
+
               <Route
                 path="/admin"
                 element={
@@ -151,7 +153,7 @@ function App() {
                   </Protected>
                 }
               />
-              {/* 1 : 1 채팅 */}
+              {/* 1 : 1 채팅 페이지 */}
               <Route
                 path="/chat"
                 element={
@@ -163,8 +165,8 @@ function App() {
             </Routes>
           </Router>
         </div>
-      </AuthProvider>
-    </DirectChatProider>
+      </DirectChatProider>
+    </AuthProvider>
   );
 }
 

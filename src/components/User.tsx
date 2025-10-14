@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
-
 type UserProps = {
+  children?: React.ReactNode;
   name: string;
   age: number;
-  children?: React.ReactNode;
 };
 export type UserType = {
   name: string;
@@ -22,18 +21,16 @@ const User = ({ name, age }: UserProps): JSX.Element => {
   }, []);
   return (
     <div>
-      {user ? (
-        <>
-          <h2>
-            User : {user.name}님의 나이는 {user.age}살 입니다.
-          </h2>
-        </>
-      ) : (
-        <>
-          <div>사용자 정보가 없습니다.</div>
-        </>
-      )}
-
+      <h2>
+        User :{' '}
+        {user ? (
+          <span>
+            {user.name}님의 나이는 {user.age}살 입니다.
+          </span>
+        ) : (
+          '사용자 정보가 없습니다.'
+        )}
+      </h2>
       <div>
         <button onClick={handleClick}>나이 증가</button>
       </div>

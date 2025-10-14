@@ -5,11 +5,11 @@ import TodoItem from './TodoItem';
 type TodoListProps = {};
 
 const TodoList = ({}: TodoListProps): JSX.Element => {
-  // Context 를 사용함
   const { todos } = useTodos();
+
   return (
     <div>
-      <h3 style={{ marginBottom: 'var(--space-4)', color: 'var(--gray-800)' }}>📃할 일 목록</h3>
+      <h3 style={{ marginBottom: 'var(--space-4)', color: 'var(--gray-800)' }}>📋 할 일 목록</h3>
       <ul>
         {todos.map((item: Todo, index: number) => (
           <TodoItem key={item.id} todo={item} index={index} />

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import type { ProfileInsert } from '../types/TodoType';
 import { createProfile } from '../lib/profile';
@@ -8,44 +8,42 @@ import { useNavigate } from 'react-router-dom';
  * - 인증 콜백 URL 처리
  * - 사용자에게 인증 진행 상태 안내
  * - 자동 인증 처리 완료 안내
- *
  */
 function AuthCallback() {
-  const [msg, setMsg] = useState<string>('인증 처리 중...');
-  // 카카오 로그인 시 대기 시간 테스트
+  const [msg, setMsg] = useState<string>('인증 처리 중 ...');
 
+  // 카카오 로그인 시 대기 시간 테스트
   const [countDown, setCountDown] = useState(0);
   // 리다이렉트가 가능한지 아닌지 보관
   const [shouldRedirect, setShouldRedirect] = useState(false);
+  // 강제로 이동하기 위한 처리
   const navigate = useNavigate();
 
   // 닉네임 추출
   const extractNickname = (user: any, isOAuthLogin: boolean, loginType: string): string => {
-    let nickName = '';
-    // if (!isOAuthLogin && !nickName) {
-    //   nickName = user.user_metadata.nickname;
-    // }
+    let nickname = '';
 
-    if (isOAuthLogin && !nickName) {
-      nickName =
+    if (isOAuthLogin) {
+      // OAuth 로그인 (카카오, 구글)인 경우
+      nickname =
         user.user_metadata.nickname ||
         user.app_metadata.full_name ||
         user.app_metadata.name ||
         user.user_metadata.full_name ||
         user.user_metadata.name ||
         user.email?.split('@')[0] ||
-        (loginType === '카카오 사용자' ? '카카오 사용자' : '구글 사용자');
+        (loginType === '카카오 로그인' ? '카카오사용자' : '구글사용자');
     } else {
       // 이메일 로그인인 경우 - 회원가입 시 저장한 닉네임 사용
-      nickName = user.user_metadata.nickName || user.user_metadata.nickname;
+      nickname = user.user_metadata.nickName || user.user_metadata.nickname;
 
       // 닉네임이 없으면 이메일에서 추출
-      if (!nickName) {
-        nickName = user.email?.split('@')[0] || '이메일사용자';
+      if (!nickname) {
+        nickname = user.email?.split('@')[0] || '이메일사용자';
       }
     }
 
-    return nickName;
+    return nickname;
   };
 
   // 프로필 존재 확인
@@ -62,7 +60,7 @@ function AuthCallback() {
     }
   };
 
-  // 메시지 전용 함수
+  // 메세지 전용 함수
   const setLoginMessage = (loginType: string, action: string, success: boolean) => {
     const emoji = success ? '🥰' : '😞';
     const status = success ? '성공' : '실패';
@@ -117,8 +115,6 @@ function AuthCallback() {
     }
   };
 
-  // 사용자가 이메일 확인 클릭하면 실행되는 곳
-  // 인증 정보에 담겨진 nickname 을 알아내서 여기서 profiles 를 추가
   // 인증 콜백 처리
   const handleAuthCallback = async (): Promise<void> => {
     try {
@@ -152,7 +148,7 @@ function AuthCallback() {
       }
 
       const user = sessionData.session.user;
-      // 카카오 또는 구글로 로그인 했는지 확인 필요 (kakao,google 은 Supabase 에서 정한 글자)
+      // 카카오 또는 구글로 로그인 했는지 확인 필요 (kakao, google 은 Supabase 에서 정한 글자)
       const isKakaoLogin = user.app_metadata.provider === 'kakao';
       const isGoogleLogin = user.app_metadata.provider === 'google';
       const isOAuthLogin = isKakaoLogin || isGoogleLogin;
@@ -172,9 +168,11 @@ function AuthCallback() {
 
       // 닉네임 추출
       const nickname = extractNickname(user, isOAuthLogin, loginType);
+      console.log('추출된 닉네임:', nickname);
 
       // 프로필 존재 확인
       const existingProfile = await checkExistingProfile(user.id);
+      console.log('기존 프로필:', existingProfile);
 
       if (!existingProfile && nickname) {
         // 프로필 생성
@@ -216,6 +214,7 @@ function AuthCallback() {
   useEffect(() => {
     // setTimeout 은 1초 뒤에 함수 실행
     const timer = setTimeout(handleAuthCallback, 1000);
+    // 클린업 함수
     return () => {
       clearTimeout(timer);
     };
@@ -224,24 +223,23 @@ function AuthCallback() {
   // 리다이렉트 처리 useEffect
   useEffect(() => {
     if (shouldRedirect) {
-      // 사용자 이동에 대한 테스트를 위해서
+      // 사용자 이동에 대한 테스트를 위해서.
       setCountDown(3);
       const timer = setInterval(() => {
         setCountDown(prev => {
           if (prev <= 1) {
-            // 타이머 중지 시킴
-            clearInterval(timer);
-            // 강제로 이동 시킴
-            navigate('/todos');
+            clearInterval(timer); // 타이머 중지 시킴
+            navigate('/todos'); // 강제로 이동시킴
             return 0;
           }
           return prev - 1;
         });
       }, 1000);
+
       // 클린업 함수
       return () => clearInterval(timer);
     }
-  }, [shouldRedirect]);
+  }, [shouldRedirect, navigate]);
 
   return (
     <div
@@ -269,7 +267,7 @@ function AuthCallback() {
           인증 페이지
         </h2>
         <div style={{ marginBottom: '16px', color: '#374151' }}>{msg}</div>
-        {/* 카운트 다운 표시 */}
+        {/* 카운트다운 표시 */}
         {countDown && (
           <div
             style={{

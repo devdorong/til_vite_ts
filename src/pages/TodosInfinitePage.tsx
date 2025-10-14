@@ -72,15 +72,6 @@ const InfiniteTodoList = () => {
     });
   };
 
-  // 개별 액션 로딩 상태 관리
-  const [actionLoading, setActionLoading] = useState<{
-    [key: number]: {
-      edit: boolean;
-      toggle: boolean;
-      delete: boolean;
-    };
-  }>({});
-
   if (loading) {
     return <div className="loading-container">데이터 로딩중 ...</div>;
   }
@@ -145,31 +136,23 @@ const InfiniteTodoList = () => {
           >
             <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
               {todos.map((item, index) => {
-                const itemLoading = actionLoading[item.id] || {
-                  edit: false,
-                  toggle: false,
-                  delete: false,
-                };
-
                 return (
-                  <Link to={`/todos/detail/${item.id}`} key={item.id}>
-                    <li
-                      className={`todo-item ${item.completed ? 'completed' : ''}`}
-                      style={{
-                        backgroundColor: index % 2 === 0 ? 'white' : 'var(--gray-50)',
-                        opacity: itemLoading.edit || itemLoading.delete ? 0.7 : 1,
-                      }}
-                    >
-                      {/* 번호표시 */}
-                      <span className="todo-number">{getGlobalIndex(index)}</span>
-                      <div className="todo-content">
-                        <span className={`todo-title ${item.completed ? 'completed' : ''}`}>
-                          {item.title}
-                        </span>
-                        <span className="todo-date">작성일: {formatDate(item.created_at)}</span>
-                      </div>
-                    </li>
-                  </Link>
+                  <li
+                    key={item.id}
+                    className={`todo-item ${item.completed ? 'completed' : ''}`}
+                    style={{
+                      backgroundColor: index % 2 === 0 ? 'white' : 'var(--gray-50)',
+                    }}
+                  >
+                    {/* 번호표시 */}
+                    <span className="todo-number">{getGlobalIndex(index)}.</span>
+                    <div className="todo-content">
+                      <span className={`todo-title ${item.completed ? 'completed' : ''}`}>
+                        <Link to={`/todos/edit/${item.id}`}>{item.title}</Link>
+                      </span>
+                      <span className="todo-date">작성일: {formatDate(item.created_at)}</span>
+                    </div>
+                  </li>
                 );
               })}
             </ul>

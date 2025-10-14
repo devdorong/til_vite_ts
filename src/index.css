@@ -27,7 +27,7 @@ body {
 a {
   text-decoration: none;
   color: #3b82f6;
-  /* 중간단계에서 색상은 0.2초 동안 부드럽게 변함 */
+  /* 중간단계에서 color은 0.2초 동안 부드럽게 변함 */
   transition: color 0.2s ease;
 }
 
@@ -44,7 +44,7 @@ a:focus {
 
 /* 버튼 클래스를 가진 링크는 색상 변경하지 않음 */
 a.btn {
-  /* inherit 은 상속으로서 색상을 지정된 것으로 사용한다. */
+  /* inherit 은 상속으로서 색상을 지정된 것을 사용 */
   color: inherit;
 }
 
@@ -58,7 +58,7 @@ a.btn:focus {
 
 /* ===== List Styles ===== */
 /* 통상 ul 은 모양없이 진행함. */
-/*  ol 은 order-list로서 순서가 있는 목록 */
+/* ol 은 order List 로서 순서가 있는 목록 */
 ul,
 li {
   list-style: none;
@@ -75,9 +75,10 @@ button {
   transition: all 0.2s ease;
 }
 
+/* 버튼이 비활성화시 처리 */
 button:disabled {
   opacity: 0.6;
-  /* 버튼의 마우스 커ㅓㅅ 오버시 보이는 모양 */
+  /* 버튼의 마우스 커서 오버시 보이는 모양 */
   cursor: not-allowed;
 }
 
@@ -88,7 +89,7 @@ textarea {
   border: 1px solid #d1d5db;
   border-radius: 8px;
   padding: 8px 12px;
-  /* 중간모션 설정에서 여러개를 조금씩 적용이 다를 때 */
+  /* 중간모션 설정에서 여러개를 조금씩 적용이 다를때 */
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
@@ -97,13 +98,13 @@ textarea {
 input:focus,
 textarea:focus {
   outline: none;
-  /* css 변수 사용하기 : var(변수명) */
+  /* css 변수사용하기 : var (변수명) */
   border-color: var(--primary-500);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 /* ===== Design System Variables ===== */
-/* css 에서 변수 만들때 */
+/* css 에서 변수 만들 때 */
 :root {
   /* Colors */
   --primary-50: #eff6ff;
@@ -131,11 +132,11 @@ textarea:focus {
   --gray-900: #111827;
 
   /* Spacing */
-  /* rem 은 html 의 폰트사이즈를 기준으로 배수로 계산 */
+  /* rem 은 html의  폰트사이즈를 기준으로 배수로 계산 */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
-  /* 1rem 이 현재는 16px */
+  /* 1rem 이 현재는 16px  */
   --space-4: 1rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
@@ -352,7 +353,7 @@ textarea:focus {
 }
 
 .todo-title.completed {
-  /* line-through 중간 취소선 */
+  /* 중간 취소선 */
   text-decoration: line-through;
   color: var(--gray-500);
 }
@@ -372,7 +373,7 @@ textarea:focus {
 .nav {
   display: flex;
   gap: var(--space-6);
-  /* 영역의 오른쪽 끝으로 정렬할 때 */
+  /* 영역에 오른쪽 끝으로 정렬할 때 */
   justify-content: flex-end;
   padding: var(--space-6) var(--space-8);
   background: white;
@@ -401,6 +402,28 @@ textarea:focus {
   outline-offset: 2px;
 }
 
+/* 알림 배지 스타일 */
+.notification-badge {
+  position: relative;
+  display: inline-block;
+  margin-left: 6px;
+  color: #ff4444;
+  font-size: 12px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 /* ===== Loading States ===== */
 .loading-container {
   display: flex;
@@ -421,6 +444,7 @@ textarea:focus {
   display: flex;
   align-items: center;
   justify-content: center;
+  /* 흐림효과 */
   backdrop-filter: blur(2px);
 }
 
@@ -461,7 +485,7 @@ textarea:focus {
   border: 1px solid var(--primary-300);
   border-top: 1px solid var(--primary-600);
   border-radius: 50%;
-  /* animation : 모션이름 모션시간 시간왜곡 무한루프 모션반대로진행 */
+  /* animation : 모션이름 모션시간 시간왜곡 무한루프 모션반대로진행*/
   animation: spin 0.5s linear infinite reverse;
 }
 

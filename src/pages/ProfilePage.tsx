@@ -3,19 +3,18 @@ import { useAuth } from '../contexts/AuthContext';
 import { getProfile, removeAvatar, updateProfile, uploadAvatar } from '../lib/profile';
 import type { Profile, ProfileUpdate } from '../types/TodoType';
 import Loading from '../components/Loading';
-import { supabase } from '../lib/supabase';
 
 /**
  * 사용자 프로필 페이지
  * - 기본 정보 표시
  * - 정보 수정
- * - 회원 탈퇴 기능 : 확인을 거치고 진행하도록
+ * - 회원탈퇴 기능 : 확인을 거치고 진행하도록
  */
 function ProfilePage() {
   // 회원 기본 정보 (카카오, 구글 회원 탈퇴 추가)
   const { user, deleteAccount, unlinkKakaoAccount, unlinkGoogleAccount, changePassword } =
     useAuth();
-  // 데이터 가져오는 동안 로딩
+  // 데이터 가져오는 동안의 로딩
   const [loading, setLoading] = useState<boolean>(true);
   // 사용자 프로필
   const [profileData, setProfileData] = useState<Profile | null>(null);
@@ -25,25 +24,25 @@ function ProfilePage() {
   const [edit, setEdit] = useState<boolean>(false);
   // 회원 닉네임 보관
   const [nickName, setNickName] = useState<string>('');
-  // 새 비밀번호
-  const [newPassword, setNewPassword] = useState('');
-  // 새 비밀번호 확인
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordMessage, setPasswordMessage] = useState<string>('');
 
   // 사용자 아바타 이미지를 위한 상태관리
   // 이미지 업로드 상태 표현
   const [uploading, setUploading] = useState<boolean>(false);
   // 미리보기 이미지 url (문자열)
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  // 실제 파일(바이너리)
+  // 실제 파일 (바이너리)
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  // 사용자가 새로운 이미지 선택시 즉, 편집 중인 경우 원본 URL 보관용
+  // 사용자가 새로운 이미지 선택시 즉, 편집 중인 경우 원본 URL 보관용 문자열
   const [originalAvatarUrl, setOriginalAvartarUrl] = useState<string | null>(null);
   // 이미지 제거 요청 상태(그러나, 실제 file 제거는 수정확인 버튼 눌렀을 때 처리)
-  const [imageRemovalRequest, setImageRemovalRequest] = useState<boolean | null>(false);
+  const [imageRemovalRequest, setImageRemovalReauest] = useState<boolean>(false);
   // input type="file" 태그 참조
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // 비밀번호 변경 관련 상태
+  const [newPassword, setNewPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [passwordMessage, setPasswordMessage] = useState<string>('');
 
   // 사용자 프로필 정보 가져오기
   const loadProfile = async () => {
@@ -54,24 +53,25 @@ function ProfilePage() {
       return;
     }
     try {
-      // 사용자 정보 가져오기 (null 일수도 있다.)
-      const newData = await getProfile(user?.id);
-      if (!newData) {
-        // null 이라면
-        setError('사용자 정보가 없습니다.');
+      // 사용자 정보 가져오기 ( null 일수도 있다. )
+      const tempData = await getProfile(user?.id);
 
+      if (!tempData) {
+        // null 이라면
+        setError('사용자 프로필 정보를 찾을 수 없습니다.');
         return;
       }
-      // 사용자 정보가 있다면
-      setNickName(newData.nickname || '');
-      setProfileData(newData);
+      // 사용자 정보가 있다.
+      setNickName(tempData.nickname || '');
+      setProfileData(tempData);
     } catch (err) {
       console.log(err);
-      setError('사용자 프로필 호출 오류!!!!!!!');
+      setError('사용자 프로필 호출 오류!!!');
     } finally {
       setLoading(false);
     }
   };
+
   // 프로필 데이터 업데이트
   const saveProfile = async () => {
     if (!user) {
@@ -85,17 +85,17 @@ function ProfilePage() {
 
     try {
       let imgUrl = originalAvatarUrl; // 원본 이미지 URL
-      // 아바타 이미지 제거
+      // 아바타이미지 제거라면
       if (imageRemovalRequest) {
         // storage 에 실제 이미지를 제거함.
         const success = await removeAvatar(user.id);
         if (success) {
           imgUrl = null;
         } else {
-          alert('이미지 제거에 실패했습니다. 기존 이미지가 유지됩니다.');
+          alert('이미지 제거에 실패했습니다. 기존 이미지가 유지 됩니다.');
         }
       } else if (selectedFile) {
-        // 새로운 이미지가 업로드 딘다면
+        // 새로운 이미지가 업로드 된다면
         const uploadedImageUrl = await uploadAvatar(selectedFile, user.id);
         if (uploadedImageUrl) {
           // 실제로 업로드 완료 후 전달받은 URL 문자열을 보관함.
@@ -106,8 +106,9 @@ function ProfilePage() {
         }
       }
 
-      // 실제로 업데이트 진행
+      // 실제로 업데이트 진행 부분
       const tempUpdateData: ProfileUpdate = { nickname: nickName, avatar_url: imgUrl };
+
       const success = await updateProfile(tempUpdateData, user.id);
       if (!success) {
         console.log('프로필 업데이트에 실패하였습니다.');
@@ -116,26 +117,26 @@ function ProfilePage() {
       // 업데이트 성공시 초기화 진행
       setPreviewImage(null);
       setSelectedFile(null);
-      setImageRemovalRequest(false);
+      setImageRemovalReauest(false);
       setOriginalAvartarUrl(null);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
-
       await loadProfile();
       alert('프로필이 성공적으로 업데이트 되었습니다.');
     } catch (err) {
       console.log('프로필 업데이트 오류', err);
     } finally {
-      setEdit(!edit);
+      setEdit(false);
     }
   };
 
   // 카카오 계정 연동 해제
-  const handleunlinkKakao = async () => {
+  const handleUnlinkKakao = async () => {
     const message =
       '카카오 계정 연동을 해제하시겠습니까? \n\n 연동 해제 후에는 카카오로 다시 로그인 할 수 없습니다.';
     const isConfirm = confirm(message);
+
     if (isConfirm) {
       const result = await unlinkKakaoAccount();
       if (result.success) {
@@ -143,16 +144,17 @@ function ProfilePage() {
         // 연동 해제 후 로그아웃 처리
         window.location.href = '/signin';
       } else if (result.error) {
-        alert(`연동 해제 실패: ${result.message}`);
+        alert(`연동 해제 실패: ${result.error}`);
       }
     }
   };
 
-  // 카카오 계정 연동 해제
-  const handleunlinkGoogle = async () => {
+  // 구글 계정 연동 해제
+  const handleUnlinkGoogle = async () => {
     const message =
       '구글 계정 연동을 해제하시겠습니까? \n\n 연동 해제 후에는 구글로 다시 로그인 할 수 없습니다.';
     const isConfirm = confirm(message);
+
     if (isConfirm) {
       const result = await unlinkGoogleAccount();
       if (result.success) {
@@ -160,30 +162,66 @@ function ProfilePage() {
         // 연동 해제 후 로그아웃 처리
         window.location.href = '/signin';
       } else if (result.error) {
-        alert(`연동 해제 실패: ${result.message}`);
+        alert(`연동 해제 실패: ${result.error}`);
       }
+    }
+  };
+
+  // 비밀번호 변경
+  const handlePasswordChange = async () => {
+    // 입력값 검증
+    if (!newPassword.trim()) {
+      setPasswordMessage('새 비밀번호를 입력해주세요.');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setPasswordMessage('비밀번호는 최소 6자 이상이어야 합니다.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage('비밀번호가 일치하지 않습니다.');
+      return;
+    }
+    try {
+      const result = await changePassword(newPassword);
+      if (result.success) {
+        setPasswordMessage('비밀번호가 성공적으로 변경되었습니다.');
+        // 폼 초기화
+        setNewPassword('');
+        setConfirmPassword('');
+        // 3초 후 메시지 자동 제거
+        setTimeout(() => {
+          setPasswordMessage('');
+        }, 3000);
+      } else if (result.error) {
+        setPasswordMessage(`비밀번호 변경 실패: ${result.error}`);
+      }
+    } catch (err) {
+      setPasswordMessage('비밀번호 변경 중 오류가 발생했습니다.');
     }
   };
 
   // 회원탈퇴
   const handleDeleteUser = () => {
-    // 카카오 로그인 사용자인지 확인
-    const isKakaoUSer = user?.app_metadata.provider === 'kakao';
-    const isGoogleUSer = user?.app_metadata.provider === 'google';
+    // 카카오 또는 구글 로그인 사용자인지 확인
+    const isKakaoUser = user?.app_metadata.provider === 'kakao';
+    const isGoogleUser = user?.app_metadata.provider === 'google';
 
-    const message: string = isKakaoUSer
-      ? '😢 카카오 계정 연동을 해제 하고 계정을 삭제하시겠습니까? \n\n 복구가 불가능합니다.'
-      : isGoogleUSer
-        ? '😢 구글 계정 연동을 해제 하고 계정을 삭제하시겠습니까? \n\n 복구가 불가능합니다.'
-        : '😢 계정을 완전히 삭제하시겠습니까? \n\n 복구가 불가능합니다.';
+    const message: string = isKakaoUser
+      ? '😥 카카오 계정 연동을 해제하고 계정을 삭제하시겠습니까? \n\n 복구가 불가능합니다.'
+      : isGoogleUser
+        ? '😥 구글 계정 연동을 해제하고 계정을 삭제하시겠습니까? \n\n 복구가 불가능합니다.'
+        : '😥 계정을 완전히 삭제하시겠습니까? \n\n 복구가 불가능합니다.';
+
     let isConfirm = false;
     isConfirm = confirm(message);
+
     if (isConfirm) {
       deleteAccount();
     }
   };
 
-  // 이미지 파일 선택 처리(미보기)
+  // 이미지 파일 선택 처리(미리보기)
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
@@ -203,7 +241,7 @@ function ProfilePage() {
       return;
     }
 
-    // 미리보기 생성(파일을 글자로 변환한 것..)
+    // 미리보기 생성 (파일을 글자로 변환한 것..)
     const reader = new FileReader();
     reader.onload = e => {
       setPreviewImage(e.target?.result as string);
@@ -212,7 +250,7 @@ function ProfilePage() {
 
     setSelectedFile(file);
     // 새 이미지 선택 시 이미지 제거 요청 상태 초기화
-    setImageRemovalRequest(false);
+    setImageRemovalReauest(false);
   };
   // 이미지 파일 선택 취소
   const handleCancelUpload = () => {
@@ -222,6 +260,7 @@ function ProfilePage() {
       fileInputRef.current.value = '';
     }
   };
+
   // 이미지 제거 처리
   const handleRemoveImage = () => {
     const ok = confirm('프로필 이미지를 제거하시겠습니까?');
@@ -230,57 +269,27 @@ function ProfilePage() {
     }
     // 즉시 제거하지 않습니다.
     // 제거하라는 상태만 별도로 관리함.
-    setImageRemovalRequest(true);
+    setImageRemovalReauest(true);
     setPreviewImage(null);
     setSelectedFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
-  // 비밀번호 변경 확인
-  const handlePasswordChange = async () => {
-    // 입력값 검출
-    if (!newPassword.trim()) {
-      setPasswordMessage('새 비밀번호를 입력하세요.');
-      return;
-    }
-    if (newPassword.length < 6) {
-      setPasswordMessage('비밀번호는 최소6자 이상이어야 합니다.');
-    }
-    if (newPassword !== confirmPassword) {
-      setPasswordMessage('비밀번호가 일치하지 않습니다.');
-    }
-    try {
-      const result = await changePassword(newPassword);
-      if (result.success) {
-        setPasswordMessage('비밀번호가 성공적으로 변경되었습니다.');
-        // 폼 초기화
-        setNewPassword('');
-        setConfirmPassword('');
-        // 3초 후 메시지 자동 제거
-        setTimeout(() => {
-          setPasswordMessage('');
-        }, 3000);
-      } else if (result.error) {
-        setPasswordMessage(`비밀번호 변경 실패 : ${result.error}`);
-      }
-    } catch (err) {
-      setPasswordMessage('비밀번호 변경 중 오류가 발생했습니다.');
-    }
-  };
 
   useEffect(() => {
     loadProfile();
   }, []);
+
   if (loading) {
-    return <Loading message="프로필 정보를 불러오는 중..." size="lg" />;
+    return <Loading message="프로필 정보를 불러오는 중 ..." size="lg" />;
   }
-  //   error 처리
+  // error 메시지 출력하기
   if (error) {
     return (
       <div className="card" style={{ textAlign: 'center' }}>
         <h2 className="page-title">⚠️ 프로필 오류</h2>
-        <div style={{ color: 'var(--gray-600', marginBottom: 'var(--space-4)' }}>{error}</div>
+        <div style={{ color: 'var(--gray-600)', marginBottom: 'var(--space-4)' }}>{error}</div>
         <button onClick={loadProfile} className="btn btn-primary">
           재시도
         </button>
@@ -291,13 +300,12 @@ function ProfilePage() {
   return (
     <div>
       <div className="page-header">
-        <h2 className="page-title">회원 정보</h2>
+        <h2 className="page-title">👤 회원정보</h2>
         <p className="page-subtitle">개인 정보를 확인하고 수정하세요.</p>
       </div>
       {/* 사용자 기본 정보 섹션 */}
       <div className="card">
-        <h3 style={{ marginBottom: 'var(--space-4)', color: 'var(--gray--800)' }}>기본 정보</h3>
-
+        <h3 style={{ marginBottom: 'var(--space-4)', color: 'var(--gray--800)' }}>📧 기본 정보</h3>
         {/* 로그인 방식 표시 */}
         <div className="form-group">
           <label className="form-label">로그인 방식</label>
@@ -310,6 +318,7 @@ function ProfilePage() {
               display: 'flex',
               alignItems: 'center',
               gap: 'var(--space-2)',
+              border: '1px solid var(--gray-200)',
             }}
           >
             {user?.app_metadata?.provider === 'kakao' ? (
@@ -359,7 +368,7 @@ function ProfilePage() {
         </div>
 
         <div className="form-group">
-          <label className="form-labe">이메일</label>
+          <label className="form-label">이메일</label>
           <div
             style={{
               padding: 'var(--space-3)',
@@ -371,7 +380,6 @@ function ProfilePage() {
             {user?.email}
           </div>
         </div>
-        <br />
         <div className="form-group">
           <label className="form-label">가입일</label>
           <div
@@ -382,343 +390,295 @@ function ProfilePage() {
               color: 'var(--gray-700)',
             }}
           >
-            {user?.created_at && new Date(user?.created_at).toLocaleString()}
+            {user?.created_at && new Date(user.created_at).toLocaleString()}
           </div>
         </div>
-        <div className="card">
-          <h3 style={{ marginBottom: 'var(--space-4)', color: 'var(--gray--800)' }}>
-            사용자 추가 정보
-          </h3>
-          <div className="form-group">
-            {edit ? (
-              <>
-                <div className="form-group">
-                  <label className="form-label">닉네임</label>
+      </div>
+      {/* 사용자 추가정보 */}
+      <div className="card">
+        <h3 style={{ marginBottom: 'var(--space-4)', color: 'var(--gray--800)' }}>
+          👤 사용자 추가 정보
+        </h3>
+        <div className="form-group">
+          <label className="form-label">아이디</label>
+          <div
+            style={{
+              padding: 'var(--space-3)',
+              backgroundColor: 'var(--gray-50)',
+              borderRadius: 'var(--radius-md)',
+              color: 'var(--gray-700)',
+            }}
+          >
+            {profileData?.id}
+          </div>
+        </div>
+        {edit ? (
+          <>
+            <div className="form-group">
+              <label className="form-label">닉네임</label>
+              <input
+                type="text"
+                value={nickName}
+                onChange={e => setNickName(e.target.value)}
+                className="form-input"
+                placeholder="닉네임을 입력하세요."
+              />
+            </div>
+            {/* 이메일 로그인 사용자에게만 비밀번호 변경 섹션 표시 */}
+            {(!user?.app_metadata.provider || user?.app_metadata.provider === 'email') && (
+              <div className="form-group">
+                <label className="form-label">🔒 비밀번호 변경</label>
+                <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
                   <input
-                    type="text"
-                    value={nickName}
-                    onChange={e => setNickName(e.target.value)}
+                    type="password"
+                    value={newPassword}
+                    onChange={e => setNewPassword(e.target.value)}
+                    placeholder="새 비밀번호(최소 6자)"
                     className="form-input"
-                    placeholder="닉네임을 입력하세요"
+                    style={{ flex: 1 }}
                   />
-                  {/* 이메일 로그인 사용자에게만 비밀번호 변경 섹션 표시 */}
-                  {(!user?.app_metadata.provider || user?.app_metadata.provider === 'email') && (
-                    <div className="form-group">
-                      <label className="form-label">🔒 비밀번호 변경</label>
-                      <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
-                        <input
-                          type="password"
-                          className="form-input"
-                          style={{ flex: 1 }}
-                          placeholder="새 비밀번호(최소 6자)"
-                          value={newPassword}
-                          onChange={e => setNewPassword(e.target.value)}
-                        />
-                        <input
-                          type="password"
-                          className="form-input"
-                          style={{ flex: 1 }}
-                          placeholder="비밀번호 확인"
-                          value={confirmPassword}
-                          onChange={e => setConfirmPassword(e.target.value)}
-                        />
-                        <button
-                          className="btn btn-primary"
-                          style={{ whiteSpace: 'nowrap' }}
-                          onClick={handlePasswordChange}
-                        >
-                          변경
-                        </button>
-                      </div>
-                      {/* 비밀번호 변경 메시지 */}
-                      {passwordMessage && (
-                        <div
-                          style={{
-                            marginTop: 'var(--space-2)',
-                            padding: 'var(--space-2)',
-                            borderRadius: 'var(--radius-sm)',
-                            fontSize: '14px',
-                            backgroundColor: passwordMessage.includes('성공')
-                              ? 'var(--success-50)'
-                              : '#fef2f2',
-                            color: passwordMessage.includes('성공')
-                              ? 'var(--success-600)'
-                              : '#dc2626',
-                            border: `1px solid ${passwordMessage.includes('성공') ? 'var(--success-600)' : '#dc2626'}`,
-                          }}
-                        >
-                          {passwordMessage}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  <div className="form-group">
-                    <h4 className="form-label">아바타 편집</h4>
-                    <div style={{ marginBottom: 'var(--space-4)' }}>
-                      {previewImage ? (
-                        <div style={{ textAlign: 'center' }}>
-                          <img
-                            src={previewImage}
-                            style={{
-                              width: 200,
-                              height: 200,
-                              objectFit: 'cover',
-                              borderRadius: '50%',
-                              border: '3px solid var(--primary-500)',
-                              boxShadow: 'var(--shadow-md)',
-                            }}
-                          />
-                          <p
-                            style={{
-                              fontSize: '12px',
-                              color: 'var(--primary-600)',
-                              marginTop: 'var(--space-2)',
-                              fontWeight: 'bold',
-                            }}
-                          >
-                            새로운 이미지 미리보기
-                          </p>
-                        </div>
-                      ) : imageRemovalRequest ? (
-                        <div style={{ textAlign: 'center' }}>
-                          <div
-                            style={{
-                              width: '200px',
-                              height: '200px',
-                              backgroundColor: 'var(--gray-50)',
-                              borderRadius: '50%',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              border: '3px dashed #dc3545',
-                              margin: '0 auto',
-                            }}
-                          >
-                            <div
-                              style={{
-                                textAlign: 'center',
-                                fontSize: '11px',
-                                color: '#dc3545',
-                                fontWeight: 'bold',
-                              }}
-                            >
-                              이미지 제거됨
-                            </div>
-                          </div>
-                          <p
-                            style={{
-                              fontSize: '12px',
-                              color: '#dc3545',
-                              marginTop: 'var(--space-2)',
-                              fontWeight: 'bold',
-                            }}
-                          >
-                            이미지가 제거되었습니다
-                          </p>
-                        </div>
-                      ) : originalAvatarUrl ? (
-                        <div
-                          style={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                          }}
-                        >
-                          <img
-                            src={originalAvatarUrl}
-                            style={{
-                              width: '200px',
-                              height: '200px',
-                              objectFit: 'cover',
-                              borderRadius: '50%',
-                              border: '3px solid var(--success-500)',
-                              boxShadow: 'var(--shadow-md)',
-                            }}
-                            alt="현재 아바타"
-                          />
-                          <p
-                            style={{
-                              fontSize: '12px',
-                              color: 'var(--success-600)',
-                              marginTop: 'var(--space-2)',
-                              fontWeight: 'bold',
-                            }}
-                          >
-                            현재 아바타
-                          </p>
-                        </div>
-                      ) : (
-                        <div style={{ textAlign: 'center' }}>
-                          <div
-                            style={{
-                              width: '200px',
-                              height: '200px',
-                              backgroundColor: 'var(--gray-50)',
-                              borderRadius: '50%',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              border: '3px dashed var(--gray-400)',
-                              margin: '0 auto',
-                            }}
-                          >
-                            <div
-                              style={{
-                                textAlign: 'center',
-                                fontSize: '11px',
-                                color: 'var(--gray-500)',
-                                fontWeight: 'bold',
-                              }}
-                            >
-                              이미지 없음
-                            </div>
-                          </div>
-                          <p
-                            style={{
-                              fontSize: '12px',
-                              color: 'var(--gray-500)',
-                              marginTop: 'var(--space-2)',
-                            }}
-                          >
-                            아바타 이미지를 설정해보세요
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                    <div>
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                        onChange={handleImageSelect}
-                      />
-                      <div style={{ textAlign: 'center' }}>
-                        <div
-                          style={{
-                            display: 'flex',
-                            gap: 'var(--space-3)',
-                            justifyContent: 'center',
-                            flexWrap: 'wrap',
-                            marginBottom: 'var(--space-4)',
-                          }}
-                        >
-                          <button
-                            className={`btn ${uploading ? 'btn-secondary' : 'btn-primary'}`}
-                            disabled={uploading}
-                            onClick={() => fileInputRef.current?.click()}
-                          >
-                            {uploading ? '업로드 중...' : '이미지 선택'}
-                          </button>
-                          {previewImage && (
-                            <button
-                              className="btn btn-secondary"
-                              disabled={uploading}
-                              onClick={handleCancelUpload}
-                            >
-                              취소
-                            </button>
-                          )}
-
-                          {!previewImage && !imageRemovalRequest && originalAvatarUrl && (
-                            <button
-                              className="btn"
-                              style={{
-                                backgroundColor: uploading ? 'var(--gray-300)' : '#dc3545',
-                                color: 'white',
-                              }}
-                              onClick={handleRemoveImage}
-                            >
-                              {uploading ? '처리 중...' : '이미지 제거'}
-                            </button>
-                          )}
-
-                          {imageRemovalRequest && (
-                            <button
-                              disabled={uploading}
-                              className={`btn ${uploading ? 'btn-secondary' : 'btn-success'}`}
-                              onClick={() => setImageRemovalRequest(false)}
-                            >
-                              제거 취소
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                      <p
-                        style={{
-                          fontSize: '12px',
-                          color: 'var(--gray-500)',
-                          marginTop: 'var(--space-2)',
-                          textAlign: 'center',
-                        }}
-                      >
-                        지원 형식 : JPEG, PNG, GIF (최대 5MB)
-                      </p>
-                    </div>
-                  </div>
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={e => setConfirmPassword(e.target.value)}
+                    placeholder="비밀번호 확인"
+                    className="form-input"
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    className="btn btn-primary"
+                    onClick={handlePasswordChange}
+                    style={{ whiteSpace: 'nowrap' }}
+                  >
+                    변경
+                  </button>
                 </div>
-              </>
-            ) : (
-              <>
-                <div className="form-group">
-                  <label className="form-label">닉네임</label>
+                {/* 비밀번호 변경 메시지 */}
+                {passwordMessage && (
                   <div
                     style={{
-                      padding: 'var(--space-3)',
-                      backgroundColor: 'var(--gray-50)',
-                      borderRadius: 'var(--radius-md)',
-                      color: 'var(--gray-700)',
+                      marginTop: 'var(--space-2)',
+                      padding: 'var(--space-2)',
+                      borderRadius: 'var(--radius-sm)',
+                      fontSize: '14px',
+                      backgroundColor: passwordMessage.includes('성공')
+                        ? 'var(--success-50)'
+                        : '#fef2f2',
+                      color: passwordMessage.includes('성공') ? 'var(--success-600)' : '#dc2626',
+                      border: `1px solid ${passwordMessage.includes('성공') ? 'var(--success-600)' : '#dc2626'}`,
                     }}
                   >
-                    {profileData?.nickname || '닉네임이 설정되지 않았습니다'}
+                    {passwordMessage}
                   </div>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">🖼️ 아바타</label>
+                )}
+              </div>
+            )}
+            <div className="form-group">
+              <label className="form-label">아바타 편집</label>
+              <div style={{ marginBottom: 'var(--space-4)' }}>
+                {previewImage ? (
                   <div style={{ textAlign: 'center' }}>
-                    {profileData?.avatar_url ? (
-                      <img
-                        src={profileData.avatar_url}
-                        alt="프로필 이미지"
-                        style={{
-                          width: '200px',
-                          height: '200px',
-                          objectFit: 'cover',
-                          borderRadius: '50%',
-                          border: '3px solid var(--success-500)',
-                          boxShadow: 'var(--shadow-md)',
-                        }}
-                      />
-                    ) : (
+                    <img
+                      src={previewImage}
+                      style={{
+                        width: '120px',
+                        height: '120px',
+                        objectFit: 'cover',
+                        borderRadius: '50%',
+                        border: '3px solid var(--primary-500)',
+                        boxShadow: 'var(--shadow-md)',
+                      }}
+                    />
+                    <p
+                      style={{
+                        fontSize: '12px',
+                        color: 'var(--primary-600)',
+                        marginTop: 'var(--space-2)',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      새로운 이미지 미리보기
+                    </p>
+                  </div>
+                ) : imageRemovalRequest ? (
+                  <div style={{ textAlign: 'center' }}>
+                    <div
+                      style={{
+                        width: '120px',
+                        height: '120px',
+                        backgroundColor: 'var(--gray-50)',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '3px dashed #dc3545',
+                        margin: '0 auto',
+                      }}
+                    >
                       <div
                         style={{
-                          width: '200px',
-                          height: '200px',
-                          backgroundColor: 'var(--gray-50)',
-                          borderRadius: '50%',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          border: '3px dashed var(--gray-400)',
-                          margin: '0 auto',
+                          textAlign: 'center',
+                          fontSize: '11px',
+                          color: '#dc3545',
+                          fontWeight: 'bold',
                         }}
                       >
-                        <div
-                          style={{ fontSize: '12px', color: 'var(--gray-500)', fontWeight: 'bold' }}
-                        >
-                          이미지 없음
-                        </div>
+                        이미지 제거됨
                       </div>
+                    </div>
+                    <p
+                      style={{
+                        fontSize: '12px',
+                        color: '#dc3545',
+                        marginTop: 'var(--space-2)',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      이미지가 제거되었습니다
+                    </p>
+                  </div>
+                ) : originalAvatarUrl ? (
+                  <div style={{ textAlign: 'center' }}>
+                    <img
+                      src={originalAvatarUrl}
+                      alt="현재 아바타"
+                      style={{
+                        width: '120px',
+                        height: '120px',
+                        objectFit: 'cover',
+                        borderRadius: '50%',
+                        border: '3px solid var(--success-500)',
+                        boxShadow: 'var(--shadow-md)',
+                      }}
+                    />
+                    <p
+                      style={{
+                        fontSize: '12px',
+                        color: 'var(--success-600)',
+                        marginTop: 'var(--space-2)',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      현재 아바타
+                    </p>
+                  </div>
+                ) : (
+                  <div style={{ textAlign: 'center' }}>
+                    <div
+                      style={{
+                        width: '120px',
+                        height: '120px',
+                        backgroundColor: 'var(--gray-50)',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '3px dashed var(--gray-400)',
+                        margin: '0 auto',
+                      }}
+                    >
+                      <div
+                        style={{
+                          textAlign: 'center',
+                          fontSize: '11px',
+                          color: 'var(--gray-500)',
+                          fontWeight: 'bold',
+                        }}
+                      >
+                        이미지 없음
+                      </div>
+                    </div>
+                    <p
+                      style={{
+                        fontSize: '12px',
+                        color: 'var(--gray-500)',
+                        marginTop: 'var(--space-2)',
+                      }}
+                    >
+                      아바타 이미지를 설정해보세요
+                    </p>
+                  </div>
+                )}
+              </div>
+              <div>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={handleImageSelect}
+                />
+                <div style={{ textAlign: 'center' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: 'var(--space-3)',
+                      justifyContent: 'center',
+                      flexWrap: 'wrap',
+                      marginBottom: 'var(--space-4)',
+                    }}
+                  >
+                    <button
+                      className={`btn ${uploading ? 'btn-secondary' : 'btn-primary'}`}
+                      disabled={uploading}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {uploading ? '업로드 중...' : '이미지 선택'}
+                    </button>
+
+                    {previewImage && (
+                      <button
+                        className={`btn btn-secondary`}
+                        disabled={uploading}
+                        onClick={handleCancelUpload}
+                      >
+                        취소
+                      </button>
+                    )}
+
+                    {!previewImage && !imageRemovalRequest && originalAvatarUrl && (
+                      <button
+                        className="btn"
+                        style={{
+                          backgroundColor: uploading ? 'var(--gray-300)' : '#dc3545',
+                          color: 'white',
+                        }}
+                        onClick={handleRemoveImage}
+                      >
+                        {uploading ? '처리 중...' : '이미지 제거'}
+                      </button>
+                    )}
+
+                    {imageRemovalRequest && (
+                      <button
+                        disabled={uploading}
+                        className={`btn ${uploading ? 'btn-secondary' : 'btn-success'}`}
+                        onClick={() => {
+                          setImageRemovalReauest(false);
+                        }}
+                      >
+                        제거 취소
+                      </button>
                     )}
                   </div>
                 </div>
-              </>
-            )}
+                <p
+                  style={{
+                    fontSize: '12px',
+                    color: 'var(--gray-500)',
+                    marginTop: 'var(--space-2)',
+                    textAlign: 'center',
+                  }}
+                >
+                  지원 형식 : JPEG, PNG, GIF (최대 5MB)
+                </p>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
             <div className="form-group">
-              <label className="form-label">가입일</label>
+              <label className="form-label">닉네임</label>
               <div
                 style={{
                   padding: 'var(--space-3)',
@@ -727,9 +687,61 @@ function ProfilePage() {
                   color: 'var(--gray-700)',
                 }}
               >
-                {profileData?.created_at && new Date(profileData.created_at).toLocaleString()}
+                {profileData?.nickname || '닉네임이 설정되지 않았습니다'}
               </div>
             </div>
+
+            <div className="form-group">
+              <label className="form-label">🖼️ 아바타</label>
+              <div style={{ textAlign: 'center' }}>
+                {profileData?.avatar_url ? (
+                  <img
+                    src={profileData.avatar_url}
+                    alt="프로필 이미지"
+                    style={{
+                      width: '120px',
+                      height: '120px',
+                      objectFit: 'cover',
+                      borderRadius: '50%',
+                      border: '3px solid var(--success-500)',
+                      boxShadow: 'var(--shadow-md)',
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      width: '120px',
+                      height: '120px',
+                      backgroundColor: 'var(--gray-50)',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: '3px dashed var(--gray-400)',
+                      margin: '0 auto',
+                    }}
+                  >
+                    <div style={{ fontSize: '12px', color: 'var(--gray-500)', fontWeight: 'bold' }}>
+                      이미지 없음
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+
+        <div className="form-group">
+          <label className="form-label">가입일</label>
+          <div
+            style={{
+              padding: 'var(--space-3)',
+              backgroundColor: 'var(--gray-50)',
+              borderRadius: 'var(--radius-md)',
+              color: 'var(--gray-700)',
+            }}
+          >
+            {profileData?.created_at && new Date(profileData.created_at).toLocaleString()}
           </div>
         </div>
       </div>
@@ -740,7 +752,6 @@ function ProfilePage() {
           gap: 'var(--space-3)',
           justifyContent: 'center',
           flexWrap: 'wrap',
-          paddingBottom: '30px',
         }}
       >
         {edit ? (
@@ -755,11 +766,11 @@ function ProfilePage() {
             <button
               className="btn btn-secondary btn-lg"
               onClick={() => {
-                setEdit(!edit);
+                setEdit(false);
                 setNickName(profileData?.nickname || '');
                 setPreviewImage(null);
                 setSelectedFile(null);
-                setImageRemovalRequest(null);
+                setImageRemovalReauest(false);
                 setOriginalAvartarUrl(null);
                 if (fileInputRef.current) {
                   fileInputRef.current.value = '';
@@ -774,10 +785,10 @@ function ProfilePage() {
             <button
               className="btn btn-primary btn-lg"
               onClick={() => {
-                setEdit(!edit);
+                setEdit(true);
                 // 편집 시작 시 원본 이미지 URL 저장
                 setOriginalAvartarUrl(profileData?.avatar_url || null);
-                setImageRemovalRequest(false);
+                setImageRemovalReauest(false);
               }}
             >
               정보수정
@@ -786,18 +797,19 @@ function ProfilePage() {
             {user?.app_metadata?.provider === 'kakao' && (
               <button
                 className="btn btn-warning btn-lg"
-                onClick={handleunlinkKakao}
+                onClick={handleUnlinkKakao}
                 style={{ backgroundColor: '#FEE500', color: '#000000', border: 'none' }}
               >
                 🔗 카카오 연동 해제
               </button>
             )}
+
             {/* 구글 사용자에게만 연동 해제 버튼 표시 */}
             {user?.app_metadata?.provider === 'google' && (
               <button
                 className="btn btn-warning btn-lg"
-                onClick={handleunlinkGoogle}
-                style={{ backgroundColor: '#e5e5e5', color: '#646464', border: 'none' }}
+                onClick={handleUnlinkGoogle}
+                style={{ backgroundColor: '#4285F4', color: '#FFFFFF', border: 'none' }}
               >
                 🔗 구글 연동 해제
               </button>
@@ -813,7 +825,6 @@ function ProfilePage() {
           </>
         )}
       </div>
-      {/* <Loading message="프로필 정보를 불러오는 중..." size="lg" /> */}
     </div>
   );
 }
